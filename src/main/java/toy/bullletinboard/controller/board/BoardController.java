@@ -1,13 +1,11 @@
-package toy.bullletinboard.Controller.board;
+package toy.bullletinboard.controller.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,13 +18,12 @@ import toy.bullletinboard.domain.board.BoardUpdateForm;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Controller
 @RequestMapping("/boards")
 @RequiredArgsConstructor
-public class boardController {
+public class BoardController {
 
     private final BoardRepository boardRepository;
 
