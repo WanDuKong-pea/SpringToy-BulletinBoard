@@ -15,5 +15,7 @@ public class BoardUpdateForm {
     @NotBlank
     private String body;
 
+    private int boardId;
+
     private String imgName;
 }

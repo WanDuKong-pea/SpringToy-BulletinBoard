@@ -16,6 +16,8 @@ public class BoardSaveForm {
     @NotBlank
     private String body;
 
+    private int boardId;
+
     private String memberId;
 
     private String imgName;
