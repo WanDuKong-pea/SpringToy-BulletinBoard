@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Bulletin Board</title>
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+ <style>
+    /* 가로폭이 450px 이하 화면 */
+    @media (max-width: 450px) {
+        table {
+            font-size: 12px;
+        }
+    }
+
+    /* 가로폭이 450px 초과 화면 */
+    @media (min-width: 451px) {
+        table {
+            font-size: 14px;
+        }
+    } 
+
+    .btn {
+        font-size:10px;
+        font-weight: bold;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .input-style {
+        font-size:12px;
+    }
+
+    .input-style:focus{
+        box-shadow: 0 0 0 1px #FFC107;
+        border-color:#FFC107;
+    }
+
+    a {
+       visibility: inherit;    
+       color:black;
+       text-decoration: none; 
+    }
+
+    .page-link{
+        color:black;
+    }
+
+    .page-link:focus{
+        box-shadow: 0 0 0 1px black;
+        color:black;
+        background-color: #FFC107;
+    }
+
+    .page-link:hover{
+        color:black;
+    }
+ </style>   
+</head>
+<body>
+<div class="container" style="max-width: 400px">
+    <!--프로젝트 로고-->
+    <div class="text-center mt-5">
+        <a herf="#"><h1><strong th:text="#{project.title}"></strong></h1></a>
+        <hr class="my-1">
+        <h6><strong th:text="#{project.subtitle}">project by KimYeJin</strong></h6>
+    </div>
+    <!--/프로젝트 로고-->
+</div>
+
+<div class="container" style="max-width: 600px">
+        <!--검색 및 회원가입,로그인 버튼-->    
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-dark float-end mt-4 mb-2 mx-1"
+                        onclick="location.href='add-post.html'" type="button">Writing</button>
+                <button class="btn btn-warning float-end mt-4 mb-2 m-1"
+                        onclick="location.href='index.html'" type="button">Logout</button>        
+                <div class="input-group float-end mt-4 mb-2 mx-3 w-50">
+                    <input type="text" class="form-control input-style" placeholder="Search" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+                </div>                                    
+            </div>
+        </div>
+        <!--/검색 및 회원가입,로그인 버튼-->
+    
+        <hr class="mt-4">
+        <!--게시물 목록-->
+        <div>
+            <table class="table text-center">
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>글쓴이</th>
+                    <th>날짜</th>
+                    <th>조회</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <!--modal 적용 예시-->
+                    <td><a href="board.html">1</a></td>
+                    <td><a href="board.html">이것은 제목 1입니다</a></td>
+                    <td>김예진</td>
+                    <td>2023-07-10</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <!--상세페이지로 넘어가는 예시-->
+                    <td><a href="board.html">2</a></td>
+                    <td><a href="board.html">이것은 제목 2입니다</a></td>
+                    <td>김예진</td>
+                    <td>2023-07-10</td>
+                    <td>0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--/게시물 목록-->
+        <!--페이지네이션-->
+        <div class="d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!--/페이지네이션-->
+    </div>
+    <!-- /container --> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>    
+</body>
+</html>
