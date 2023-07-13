@@ -54,7 +54,7 @@
         <!--/게시글 편집, 삭제 버튼-->
 
         <!--게시글 이미지-->
-        <img th:src="|/images/${board.getImgName()}|" class="img-fluid my-2"/>
+        <img th:src="|/images/${board.getImgName()}|" onerror="this.style.display='none';" class="img-fluid my-2"/>
         <!--/게시글 이미지-->    
       
         <!--게시글 상세내용-->

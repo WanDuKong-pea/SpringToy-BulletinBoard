@@ -41,7 +41,7 @@
   <div class="container" style="max-width: 600px">
         <!--회원가입 축하 문구-->
         <div class="text-center pt-2">
-          <h5 style="color:gray;"><strong th:text="#{project.login.celebrate}">Thank you for signing up</strong></h5>
+          <h5 style="color:gray;"><strong th:if="${param.status}" th:text="#{project.login.celebrate}">Thank you for signing up</strong></h5>
         </div>
         <!--/회원가입 축하 문구-->      
 

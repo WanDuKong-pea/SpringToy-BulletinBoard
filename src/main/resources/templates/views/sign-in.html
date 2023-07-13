@@ -48,17 +48,22 @@
 
       <!--회원가입 폼-->
       <div class="d-flex justify-content-center">
-        <form action="login.html">
-        <input class="form-control input form-style input-style" type="text" th:placeholder="#{label.input.member.id}" placeholder="ID" aria-label="default input example">
-        <div class="alert-div my-1">중복된 아이디입니다.</div>
-        <input class="form-control form-style input-style" type="password" id="password" th:placeholder="#{label.input.member.pass}" placeholder="Password.(alphabet+number)" aria-labelledby="passwordHelpBlock">
-        <div class="alert-div my-1">비밀번호는 영문 + 숫자 조합이어야 합니다.</div>
-        <input class="form-control form-style input-style" type="password" id="chkPassword" th:placeholder="#{label.input.member.chkpass}" placeholder="Check Password." aria-labelledby="passwordHelpBlock">
-        <div class="alert-div my-1">비밀번호 확인이 틀렸습니다.</div>
-        <input class="form-control input form-style input-style" type="text" th:placeholder="#{label.input.member.nickname}" placeholder="NickName." aria-label="default input example">
-        <div class="alert-div my-1">중복된 닉네임입니다.</div>
-        <input class="form-control input form-style input-style" type="text" th:placeholder="#{label.input.member.email}" placeholder="Email" aria-label="default input example">
-        <div class="alert-div my-1">이메일 양식이 틀렸습니다.</div>
+        <form action="login.html" method="post" th:action th:object="${member}">
+        <input class="form-control input form-style input-style mb-2" type="text" placeholder="ID" aria-label="default input example"
+               th:field="*{loginId}" th:errorclass="field-error" th:placeholder="#{label.input.member.id}">
+        <div class="field-error alert-div my-1" th:errors="*{loginId}">중복된 아이디입니다.</div>
+        <input class="form-control form-style input-style mb-2" type="password" placeholder="Password.(alphabet+number)" aria-labelledby="passwordHelpBlock"
+               th:field="*{password}" th:errorclass="field-error" th:placeholder="#{label.input.member.pass}">
+        <div class="field-error alert-div my-1"  th:errors="*{password}">비밀번호는 영문 + 숫자 조합이어야 합니다.</div>
+        <input class="form-control form-style input-style mb-2" type="password" id="chkPassword" placeholder="Check Password." aria-labelledby="passwordHelpBlock"
+               th:field="*{chkPassword}" th:errorclass="field-error" th:placeholder="#{label.input.member.chkpass}">
+        <div class="field-error alert-div my-1" th:errors="*{chkPassword}" >비밀번호 확인이 틀렸습니다.</div>
+        <input class="form-control input form-style input-style mb-2" type="text" placeholder="NickName." aria-label="default input example"
+               th:field="*{nickName}" th:errorclass="field-error" th:placeholder="#{label.input.member.nickname}">
+        <div class="field-error alert-div my-1" th:errors="*{nickName}">중복된 닉네임입니다.</div>
+        <input class="form-control input form-style input-style mb-2" type="text" placeholder="Email" aria-label="default input example"
+               th:field="*{email}" th:errorclass="field-error" th:placeholder="#{label.input.member.email}">
+        <div class="field-error alert-div my-1" th:errors="*{email}">이메일 양식이 틀렸습니다.</div>
         <button class="btn btn-dark form-style" type="submit" th:text="#{label.button.signin}"></button>
         </form>
       </div>
