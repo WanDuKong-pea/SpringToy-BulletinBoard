@@ -55,14 +55,13 @@
 
     <!--로그인 폼-->
     <div class="d-flex justify-content-center">
-        <form class="w-80" action="index2.html">
-            <input class="form-control form-style" type="text" th:placeholder="#{label.input.member.id}"
-                   placeholder="ID" aria-label="default input example">
-            <div class="alert-div my-1">존재하지 않는 아이디입니다.</div>
-            <input class="form-control form-style" type="password" id="inputPassword5"
-                   th:placeholder="#{label.input.member.pass}" placeholder="Password.(alphabet+number)"
-                   aria-labelledby="passwordHelpBlock">
-            <div class="alert-div my-1">비밀번호가 틀렸습니다.</div>
+        <form class="w-80" th:action th:object="${member}" method="post">
+            <input class="form-control form-style mb-1" type="text" placeholder="ID" aria-label="default input example"
+                   th:field="*{loginId}" th:errorclass="field-error" th:placeholder="#{label.input.member.id}">
+            <div class="field-error alert-div my-1" th:errors="*{loginId}"></div>
+            <input class="form-control form-style mb-1" type="password" placeholder="Password.(alphabet+number)" aria-labelledby="passwordHelpBlock"
+                   th:field="*{password}" th:errorclass="field-error" th:placeholder="#{label.input.member.pass}">
+            <div class="field-error alert-div my-1" th:errors="*{password}"></div>
             <button class="btn btn-dark form-style" type="submit" th:text="#{label.button.login}">Login</button>
         </form>
     </div>

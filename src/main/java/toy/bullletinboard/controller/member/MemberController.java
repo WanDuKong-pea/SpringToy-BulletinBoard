@@ -7,9 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import toy.bullletinboard.domain.member.Member;
-import toy.bullletinboard.domain.member.MemberRepository;
-import toy.bullletinboard.domain.member.MemberSaveForm;
+import toy.bullletinboard.domain.member.*;
 
 import javax.validation.Valid;
 import java.util.Objects;
@@ -20,11 +18,41 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberRepository memberRepository;
+    private final LoginService loginService;
 
     @GetMapping("/login")
-    public String login() {
+    public String loginForm(@ModelAttribute("member") MemberLoginForm memberForm) {
         return "views/login";
     }
+
+    @PostMapping("/login")
+    public String login(@Valid @ModelAttribute("member") MemberLoginForm memberForm,
+                        BindingResult bindingResult) {
+        //필수 입력 부분
+        if(bindingResult.hasErrors()){
+            log.info("loginForm errors={}", bindingResult);
+            return "views/login";
+        }
+
+        //아이디 존재 유무
+        if(loginService.isLoginId(memberForm.getLoginId())){
+            bindingResult.rejectValue("loginId","loginFail");
+            log.info("loginId error {}",bindingResult);
+            return "views/login";
+        }
+
+        //비밀번호 부분
+        Member loginMember = loginService.login(memberForm.getLoginId(),memberForm.getPassword());
+        if(loginMember == null){
+            bindingResult.rejectValue("password","loginFail");
+            return "views/login";
+        }
+
+        log.info("Login User: member={}",loginMember);
+        //로그인 성공 처리
+        return "redirect:/boards";
+    }
+
 
     @GetMapping("/sign-in")
     public String siginIn(Model model) {
