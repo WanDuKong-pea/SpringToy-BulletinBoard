@@ -3,21 +3,25 @@ package toy.bullletinboard.controller.board;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import toy.bullletinboard.domain.board.Board;
-import toy.bullletinboard.domain.board.BoardRepository;
-import toy.bullletinboard.domain.board.BoardSaveForm;
-import toy.bullletinboard.domain.board.BoardUpdateForm;
+import toy.bullletinboard.domain.board.*;
+import toy.bullletinboard.file.FileStore;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -26,9 +30,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardRepository boardRepository;
-
-    @Value("${file.dir}")
-    private String fileDir;
+    private final FileStore fileStore;
 
     @GetMapping
     public String boards(Model model) {
@@ -50,10 +52,25 @@ public class BoardController {
         return "views/addBoard";
     }
 
+    /**
+     * 태그로 이미지를 조회할때 사용
+     * UrlResource로 이미지 파일을 읽어서 @ResponseBody로 이미지 바이너리 변환
+     * 서버에 저장된 파일명을 파라미터로 받음
+     */
+    @ResponseBody
+    @GetMapping("/images/{filename}")
+    public Resource downloadImage(@PathVariable String filename) throws MalformedURLException {
+        if(Objects.equals(filename, "")){
+            return new UrlResource("");
+        }
+        return new UrlResource("file:" + fileStore.getFullPath(filename));
+    }
+
+
     @PostMapping("/add")
     public String addBoard(@Validated @ModelAttribute("board") BoardSaveForm boardForm, BindingResult bindingResult,
-                           RedirectAttributes redirectAttributes, @RequestParam MultipartFile file) throws IOException {
-        //@ModelAttribute("board")을 지정해주어야 뷰에서 board으로 받음 + 에러 코드 오브젝트도 item으로 생김
+                           RedirectAttributes redirectAttributes) throws IOException  {
+        //@ModelAttribute("board")을 지정해주어야 뷰에서 board으로 받음 + 에러 코드 오브젝트도 board으로 생김
 
         //검증에 실패하면 다시 입력 폼으로
         if (bindingResult.hasErrors()) {
@@ -63,19 +80,17 @@ public class BoardController {
             return "views/addBoard";
         }
 
-    //성공 로직
-
-        //파일 저장
-        if (!file.isEmpty()) {
-            String fullPath = fileDir + file.getOriginalFilename();
-            file.transferTo(new File(fullPath));
-        }
-        boardForm.setImgName(file.getOriginalFilename());
-
         Board board = new Board();
+
+        //성공 로직
+        if (boardForm.getImgName() != null) {
+            UploadFile attachFile = fileStore.storeFile(boardForm.getImgName());
+            board.setImgName(attachFile);
+        }
+
         board.setTitle(boardForm.getTitle());
         board.setBody(boardForm.getBody());
-        board.setImgName(boardForm.getImgName());
+
 
         //게시판 DB저장
         Board savedBoard = boardRepository.save(board);
@@ -84,16 +99,18 @@ public class BoardController {
         return "redirect:/boards/{boardId}";
     }
 
+
     @GetMapping("/edit/{boardId}")
     public String editBoard(@PathVariable long boardId, Model model) {
         Board board = boardRepository.findById(boardId);
+        log.info("boardImg={}",board.getImgName());
         model.addAttribute("board", board);
         return "views/editBoard";
     }
 
     @PostMapping("/edit/{boardId}")
     public String editBoard(@Validated @ModelAttribute("board") BoardUpdateForm boardForm, BindingResult bindingResult, @PathVariable long boardId,
-                            RedirectAttributes redirectAttributes, @RequestParam MultipartFile file) throws IOException {
+                            RedirectAttributes redirectAttributes) throws IOException {
 
         //검증에 실패하면 다시 입력 폼으로
         if (bindingResult.hasErrors()) {
@@ -102,20 +119,18 @@ public class BoardController {
         }
 
         //성공 로직
+        Board board = new Board();
         //파일 저장
-        if (!file.isEmpty()) {
-            String fullPath = fileDir + file.getOriginalFilename();
-            file.transferTo(new File(fullPath));
-            boardForm.setImgName(file.getOriginalFilename());
+        if (boardForm.getImgName() != null){//파일이 존재하면
+            UploadFile attachFile = fileStore.storeFile(boardForm.getImgName());
+            board.setImgName(attachFile);
         }
 
-
-        Board board = new Board();
         board.setTitle(boardForm.getTitle());
         board.setBody(boardForm.getBody());
-        board.setImgName(boardForm.getImgName());
 
-
+        log.info("paramBoard={}",boardForm);
+        log.info("saveBoard={}",board);
         //게시판 DB업데이트
         Board updateBoard = boardRepository.update(boardId, board);
         redirectAttributes.addAttribute("boardId", updateBoard.getBoardId());
@@ -124,7 +139,7 @@ public class BoardController {
     }
 
     @GetMapping("/delete/{boardId}")
-    public String deleteBoard(@PathVariable long boardId, RedirectAttributes redirectAttributes){
+    public String deleteBoard(@PathVariable long boardId, RedirectAttributes redirectAttributes) {
         boardRepository.delete(boardId);
         redirectAttributes.addAttribute("deleteStatus", true);
         return "redirect:/boards";

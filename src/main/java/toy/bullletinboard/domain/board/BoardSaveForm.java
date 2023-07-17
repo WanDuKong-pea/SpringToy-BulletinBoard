@@ -1,6 +1,7 @@
 package toy.bullletinboard.domain.board;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -21,6 +22,6 @@ public class BoardSaveForm {
 
     private String memberId;
 
-    private String imgName;
+    private MultipartFile imgName;;
 
 }

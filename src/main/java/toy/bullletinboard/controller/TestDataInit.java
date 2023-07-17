@@ -23,8 +23,8 @@ public class TestDataInit {
         //@PostConstruct: 의존성 주입이 이루어진 후 초기화를 수행하는 메서드.
         //클래스가 service()를 수행하기 전에 발생.
 
-        itemRepository.save(new Board("cok854", "테스트용 데이터1", "본문입니다.","default-image.png",0));
-        itemRepository.save(new Board("cok894", "테스트용 데이터2", "본문입니다.","default-image.png",0));
+        //itemRepository.save(new Board("cok854", "테스트용 데이터1", "본문입니다.","default-image.png",0));
+        //itemRepository.save(new Board("cok894", "테스트용 데이터2", "본문입니다.","default-image.png",0));
 
         Member member = new Member();
         member.setLoginId("test123");

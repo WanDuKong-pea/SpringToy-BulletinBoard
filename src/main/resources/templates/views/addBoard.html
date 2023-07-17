@@ -65,8 +65,8 @@
 
       <!--글쓰기 폼-->
       <div class="d-flex justify-content-center">
-        <form action="board.html" th:action th:object="${board}" method="post" enctype="multipart/form-data">
-        <input class="form-control mb-1" type="file" id="file" name="file" onchange="readURL(this);">
+        <form name="addBoardForm" action="board.html" th:action th:object="${board}" method="post" enctype="multipart/form-data">
+        <input class="form-control mb-1" type="file" th:field="*{imgName}" onchange="readURL(this);">
         <input class="form-control input input-style mb-1" type="text" id="title" th:field="*{title}"
                th:errorclass="field-error" th:placeholder="#{label.input.board.title}" placeholder="Title" aria-label="default input example">
         <div class="field-error alert-div my-1" th:errors="*{title}">제목 오류</div>

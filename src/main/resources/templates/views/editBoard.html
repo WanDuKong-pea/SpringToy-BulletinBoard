@@ -60,13 +60,13 @@
       <!--/글쓰기 로고-->
 
       <!--게시글 기존 이미지-->
-      <img id="preview" th:src="|/images/${board.getImgName()}|" onerror="this.style.display='none';" class="img-fluid my-2"/>
+      <img id="preview" th:src="|/boards/images/${board.getImgName().getStoreFileName()}|" onerror="this.style.display='none';" class="img-fluid my-2"/>
       <!--/게시글 기존 이미지-->
 
     <!--편집 폼-->
       <div class="d-flex justify-content-center">
         <form action="board.html" th:action th:object="${board}" method="post" enctype="multipart/form-data">
-          <input class="form-control mb-1" type="file" id="file" name="file" onchange="readURL(this);">
+          <input class="form-control mb-1" type="file" th:field="*{imgName}" onchange="readURL(this);">
           <input class="form-control input input-style mb-1" type="text" id="title" th:field="*{title}"
                  th:errorclass="field-error" th:placeholder="#{label.input.board.title}" placeholder="Title" aria-label="default input example">
           <div class="alert-div my-1 field-error" th:errors="*{title}">제목 오류</div>

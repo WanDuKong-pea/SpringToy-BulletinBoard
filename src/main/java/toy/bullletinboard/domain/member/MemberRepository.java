@@ -7,8 +7,8 @@ import java.util.*;
 @Slf4j
 @Repository
 public class MemberRepository {
-    private static Map<Long, Member> store = new HashMap<>();
-    private static long sequence = 0L;
+    private final Map<Long, Member> store = new HashMap<>();
+    private long sequence = 0L;
 
     public Member save(Member member) {
         member.setId(++sequence);
@@ -16,6 +16,7 @@ public class MemberRepository {
         store.put(member.getId(), member);
         return member;
     }
+
 
     /**
      * db 자동 등록 id로 member 조회

@@ -10,11 +10,11 @@ public class MemberSaveForm {
     private Long id;
 
     @NotBlank
-    @Pattern(regexp="[a-zA-Z1-9]{2,12}")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{6,12}$")
     private String loginId;
 
     @NotBlank
-    @Pattern(regexp="[a-zA-Z1-9]{6,12}")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{6,12}$")
     private String password;
 
     @NotBlank

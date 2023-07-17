@@ -13,6 +13,11 @@ public class BoardRepository {
     public Board save(Board board) {
         board.setBoardId(++sequence);
         board.setRegDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+
+        if(board.getImgName() == null){
+            board.setImgName(new UploadFile("default","default"));
+        }
+
         store.put(board.getBoardId(), board);
         return board;
     }
@@ -30,7 +35,7 @@ public class BoardRepository {
         findBoard.setTitle(updateParam.getTitle());
         findBoard.setBody(updateParam.getBody());
 
-        if(updateParam.getImgName() != null) {
+        if(updateParam.getImgName() != null){
             findBoard.setImgName(updateParam.getImgName());
         }
 
