@@ -12,9 +12,9 @@ public class UploadFile {
     //서버 내부에서 관리하는 파일명
     private String storeFileName;
 
-    public UploadFile(String uploadFileName, String storeFileName){
-        this.uploadFileName=uploadFileName;
-        this.storeFileName=storeFileName;
+    public UploadFile(String uploadFileName, String storeFileName) {
+        this.uploadFileName = uploadFileName;
+        this.storeFileName = storeFileName;
     }
 
     //고객이 업로드한 파일명으로 서버 내부에 파일 저장을 하면 안됨

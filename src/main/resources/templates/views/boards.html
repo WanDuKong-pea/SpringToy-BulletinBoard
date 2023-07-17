@@ -1,176 +1,187 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
- <meta charset="utf-8">
- <title>Bulletin Board</title>
- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
- <style>
-    /* 가로폭이 450px 이하 화면 */
-    @media (max-width: 450px) {
-        table {
+    <meta charset="utf-8">
+    <title>Bulletin Board</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        /* 가로폭이 450px 이하 화면 */
+        @media (max-width: 450px) {
+            table {
+                font-size: 12px;
+            }
+        }
+
+        /* 가로폭이 450px 초과 화면 */
+        @media (min-width: 451px) {
+            table {
+                font-size: 14px;
+            }
+        }
+
+        .btn {
+            font-size: 10px;
+            font-weight: bold;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .input-style {
             font-size: 12px;
         }
-    }
 
-    /* 가로폭이 450px 초과 화면 */
-    @media (min-width: 451px) {
-        table {
-            font-size: 14px;
+        .input-style:focus {
+            box-shadow: 0 0 0 1px #FFC107;
+            border-color: #FFC107;
         }
-    } 
 
-    .btn {
-        font-size:10px;
-        font-weight: bold;
-        padding-top: 8px;
-        padding-bottom: 8px;
-        padding-left: 10px;
-        padding-right: 10px;
-    }
+        a {
+            visibility: inherit;
+            color: black;
+            text-decoration: none;
+        }
 
-    .input-style {
-        font-size:12px;
-    }
+        .page-link {
+            color: black;
+        }
 
-    .input-style:focus{
-        box-shadow: 0 0 0 1px #FFC107;
-        border-color:#FFC107;
-    }
+        .page-link:focus {
+            box-shadow: 0 0 0 1px black;
+            color: black;
+            background-color: #FFC107;
+        }
 
-    a {
-       visibility: inherit;    
-       color:black;
-       text-decoration: none; 
-    }
-
-    .page-link{
-        color:black;
-    }
-
-    .page-link:focus{
-        box-shadow: 0 0 0 1px black;
-        color:black;
-        background-color: #FFC107;
-    }
-
-    .page-link:hover{
-        color:black;
-    }
- </style>   
+        .page-link:hover {
+            color: black;
+        }
+    </style>
 </head>
 <body>
-    <div class="container" style="max-width: 400px">
-        <!--프로젝트 로고-->
-          <div class="text-center mt-5">
-              <a th:href="@{/boards}"><h1><strong th:text="#{project.title}"></strong></h1></a>
-            <hr class="my-1">
-            <h6><strong th:text="#{project.subtitle}">project by KimYeJin</strong></h6>
-          </div>  
-        <!--/프로젝트 로고-->
+<div class="container" style="max-width: 400px">
+    <!--프로젝트 로고-->
+    <div class="text-center mt-5">
+        <a th:href="@{/boards}"><h1><strong th:text="#{project.title}"></strong></h1></a>
+        <hr class="my-1">
+        <h6><strong th:text="#{project.subtitle}">project by KimYeJin</strong></h6>
     </div>
+    <!--/프로젝트 로고-->
+</div>
 
-    <div class="container" style="max-width: 400px">
-        <!--삭제 성공 문구-->
-        <div class="text-center pt-2">
-            <h5 style="color:gray;"><strong th:if="${param.deleteStatus}" th:text="#{project.board.delete.success}"></strong></h5>
-        </div>
-        <!--/삭제 성공 문구-->
+<div class="container" style="max-width: 400px">
+    <!--삭제 성공 문구-->
+    <div class="text-center pt-2">
+        <h5 style="color:gray;"><strong th:if="${param.deleteStatus}"
+                                        th:text="#{project.board.delete.success}"></strong></h5>
     </div>
+    <!--/삭제 성공 문구-->
+</div>
 
-    <div class="container" style="max-width: 600px">      
-        <!--검색 및 회원가입,로그인 버튼-->    
-        <div class="row">
-            <div class="col">
-                <button class="btn btn-dark float-end mt-4 mb-2 mx-1" th:text="#{label.button.logout}"
-                        onclick="location.href='sign-in.html'" type="button"></button>
-                <button class="btn btn-warning float-end mt-4 mb-2 m-1" th:text="#{label.button.write}"
-                        th:onclick="|location.href='@{/boards/add}'|" type="button"></button>
-                <div class="input-group float-end mt-4 mb-2 mx-3 w-50">
-                    <input type="text" class="form-control input-style"  th:placeholder="#{label.input.search}" placeholder="Search" aria-label="Recipient's username" aria-describedby="button-addon2">
-                    <button class="btn btn-outline-secondary" type="button" id="button-addon2" th:text="#{label.button.search}"
-                        data-bs-target="#loginModal" data-bs-toggle="modal">Search</button>
-                </div>                                    
+<div class="container" style="max-width: 600px">
+    <!--검색 및 회원가입,로그인 버튼-->
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-dark float-end mt-4 mb-2 mx-1" th:text="#{label.button.logout}"
+                    onclick="location.href='sign-in.html'" type="button"></button>
+            <button class="btn btn-warning float-end mt-4 mb-2 m-1" th:text="#{label.button.write}"
+                    th:onclick="|location.href='@{/boards/add}'|" type="button"></button>
+            <div class="input-group float-end mt-4 mb-2 mx-3 w-50">
+                <input type="text" class="form-control input-style" th:placeholder="#{label.input.search}"
+                       placeholder="Search" aria-label="Recipient's username" aria-describedby="button-addon2">
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                        th:text="#{label.button.search}"
+                        data-bs-target="#loginModal" data-bs-toggle="modal">Search
+                </button>
             </div>
         </div>
-        <!--/검색 및 회원가입,로그인 버튼-->
-    
-        <hr class="mt-4">
-        <!--게시물 목록-->
-        <div>
-            <table class="table text-center">
-                <thead>
-                <tr>
-                    <th th:text="#{label.post.number}">number</th>
-                    <th th:text="#{label.post.title}">title</th>
-                    <th th:text="#{label.post.writer}">writer</th>
-                    <th th:text="#{label.post.date}">date</th>
-                    <th th:text="#{label.post.views}">views</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <!--modal 적용 예시-->
-                    <td><a href="#loginModal" data-bs-toggle="modal">100</a></td>
-                    <td><a href="#loginModal" data-bs-toggle="modal">이것은 모달 테스트</a></td>
-                    <td>김예진</td>
-                    <td>2023-07-10</td>
-                    <td>0</td>
-                </tr>
-                    <!--상세페이지-->
-                <tr th:each="board : ${boards}">
-                    <td><a href="board.html" th:href="@{|/boards/${board.boardId}|}" th:text="${board.boardId}">번호</a></td>
-                    <td><a href="board.html" th:href="@{|/boards/${board.boardId}|}" th:text="${board.title}">제목</a></td>
-                    <td th:text="${board.memberId}">작성자</td>
-                    <td th:text="${board.regDate}">등록일</td>
-                    <td th:text="${board.views}">조회수</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <!--/게시물 목록-->
-        <!--페이지네이션-->
-        <div class="d-flex justify-content-center">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <!--/페이지네이션-->
     </div>
-    <!-- /container --> 
+    <!--/검색 및 회원가입,로그인 버튼-->
 
-  <!-- 로그인 유도 모달 -->
-  <div class="modal" tabindex="-1" id="loginModal">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" th:text="#{modal.title.login}">Access restriction</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body text-center">
-          <h6 th:text="#{modal.body.login}">Please, Login</h6>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-dark" data-bs-dismiss="modal" th:text="#{label.button.cancel}">Cancel</button>
-          <button type="button" class="btn btn-warning" th:onclick="|location.href='@{/member/login}'|" th:text="#{label.button.login}">OK</button>
-        </div>
-      </div>
+    <hr class="mt-4">
+    <!--게시물 목록-->
+    <div>
+        <table class="table text-center">
+            <thead>
+            <tr>
+                <th th:text="#{label.post.number}">number</th>
+                <th th:text="#{label.post.title}">title</th>
+                <th th:text="#{label.post.writer}">writer</th>
+                <th th:text="#{label.post.date}">date</th>
+                <th th:text="#{label.post.views}">views</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <!--modal 적용 예시-->
+                <td><a href="#loginModal" data-bs-toggle="modal">100</a></td>
+                <td><a href="#loginModal" data-bs-toggle="modal">이것은 모달 테스트</a></td>
+                <td>김예진</td>
+                <td>2023-07-10</td>
+                <td>0</td>
+            </tr>
+            <!--상세페이지-->
+            <tr th:each="board : ${boards}">
+                <td><a href="board.html" th:href="@{|/boards/${board.boardId}|}" th:text="${board.boardId}">번호</a></td>
+                <td><a href="board.html" th:href="@{|/boards/${board.boardId}|}" th:text="${board.title}">제목</a></td>
+                <td th:text="${board.memberId}">작성자</td>
+                <td th:text="${board.regDate}">등록일</td>
+                <td th:text="${board.views}">조회수</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-  </div>
-  <!--/로그인 유도 모달-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>    
+    <!--/게시물 목록-->
+    <!--페이지네이션-->
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!--/페이지네이션-->
+</div>
+<!-- /container -->
+
+<!-- 로그인 유도 모달 -->
+<div class="modal" tabindex="-1" id="loginModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:text="#{modal.title.login}">Access restriction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h6 th:text="#{modal.body.login}">Please, Login</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal" th:text="#{label.button.cancel}">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-warning" th:onclick="|location.href='@{/member/login}'|"
+                        th:text="#{label.button.login}">OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/로그인 유도 모달-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 </body>
 </html>

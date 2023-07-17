@@ -12,7 +12,6 @@ import toy.bullletinboard.domain.member.MemberRepository;
 import toy.bullletinboard.domain.member.MemberSaveForm;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
 import java.util.Objects;
 
 @Slf4j

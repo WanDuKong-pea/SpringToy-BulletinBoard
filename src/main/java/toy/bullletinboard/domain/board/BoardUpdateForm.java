@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotBlank;
 
 /**
-    수정용 Board 객체 DTO와 같은 역할
+ * 수정용 Board 객체 DTO와 같은 역할
  */
 @Data
 public class BoardUpdateForm {

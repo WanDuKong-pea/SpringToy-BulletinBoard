@@ -1,7 +1,6 @@
 package toy.bullletinboard.domain.board;
 
 import org.springframework.stereotype.Repository;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -14,8 +13,8 @@ public class BoardRepository {
         board.setBoardId(++sequence);
         board.setRegDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
-        if(board.getImgName() == null){
-            board.setImgName(new UploadFile("default","default"));
+        if (board.getImgName() == null) {
+            board.setImgName(new UploadFile("default", "default"));
         }
 
         store.put(board.getBoardId(), board);
@@ -35,7 +34,7 @@ public class BoardRepository {
         findBoard.setTitle(updateParam.getTitle());
         findBoard.setBody(updateParam.getBody());
 
-        if(updateParam.getImgName() != null){
+        if (updateParam.getImgName() != null) {
             findBoard.setImgName(updateParam.getImgName());
         }
 

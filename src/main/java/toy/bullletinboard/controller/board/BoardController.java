@@ -2,26 +2,21 @@ package toy.bullletinboard.controller.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import toy.bullletinboard.domain.board.*;
 import toy.bullletinboard.file.FileStore;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -60,7 +55,7 @@ public class BoardController {
     @ResponseBody
     @GetMapping("/images/{filename}")
     public Resource downloadImage(@PathVariable String filename) throws MalformedURLException {
-        if(Objects.equals(filename, "")){
+        if (Objects.equals(filename, "")) {
             return new UrlResource("");
         }
         return new UrlResource("file:" + fileStore.getFullPath(filename));
@@ -69,7 +64,7 @@ public class BoardController {
 
     @PostMapping("/add")
     public String addBoard(@Validated @ModelAttribute("board") BoardSaveForm boardForm, BindingResult bindingResult,
-                           RedirectAttributes redirectAttributes) throws IOException  {
+                           RedirectAttributes redirectAttributes) throws IOException {
         //@ModelAttribute("board")을 지정해주어야 뷰에서 board으로 받음 + 에러 코드 오브젝트도 board으로 생김
 
         //검증에 실패하면 다시 입력 폼으로
@@ -103,7 +98,7 @@ public class BoardController {
     @GetMapping("/edit/{boardId}")
     public String editBoard(@PathVariable long boardId, Model model) {
         Board board = boardRepository.findById(boardId);
-        log.info("boardImg={}",board.getImgName());
+        log.info("boardImg={}", board.getImgName());
         model.addAttribute("board", board);
         return "views/editBoard";
     }
@@ -121,7 +116,7 @@ public class BoardController {
         //성공 로직
         Board board = new Board();
         //파일 저장
-        if (boardForm.getImgName() != null){//파일이 존재하면
+        if (boardForm.getImgName() != null) {//파일이 존재하면
             UploadFile attachFile = fileStore.storeFile(boardForm.getImgName());
             board.setImgName(attachFile);
         }
@@ -129,8 +124,8 @@ public class BoardController {
         board.setTitle(boardForm.getTitle());
         board.setBody(boardForm.getBody());
 
-        log.info("paramBoard={}",boardForm);
-        log.info("saveBoard={}",board);
+        log.info("paramBoard={}", boardForm);
+        log.info("saveBoard={}", board);
         //게시판 DB업데이트
         Board updateBoard = boardRepository.update(boardId, board);
         redirectAttributes.addAttribute("boardId", updateBoard.getBoardId());
