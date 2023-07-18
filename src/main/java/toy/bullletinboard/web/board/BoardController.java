@@ -1,4 +1,4 @@
-package toy.bullletinboard.controller.board;
+package toy.bullletinboard.web.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import toy.bullletinboard.domain.board.*;
+import toy.bullletinboard.domain.member.Member;
+import toy.bullletinboard.domain.member.SessionConst;
 import toy.bullletinboard.file.FileStore;
 
 import java.io.IOException;
@@ -27,22 +29,50 @@ public class BoardController {
     private final BoardRepository boardRepository;
     private final FileStore fileStore;
 
+
     @GetMapping
-    public String boards(Model model) {
+    public String boards(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
         List<Board> boards = boardRepository.findAll();
         model.addAttribute("boards", boards);
-        return "views/boards";
+
+        //세션 확인
+        if(loginMember == null){
+            return "views/boards";
+        }
+
+        //로그인 된 사용자(세션 유지되어 있으면)
+        model.addAttribute("member",loginMember);
+        return "views/login-boards";
     }
 
     @GetMapping("/{boardId}")
-    public String item(@PathVariable long boardId, Model model) {
+    public String item(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                       @PathVariable long boardId, Model model) {
+
+        //세션 확인
+        if(loginMember == null){
+            return "views/boards";
+        }
+
+        //로그인 된 사용자(세션 유지되어 있으면)
         Board board = boardRepository.findById(boardId);
         model.addAttribute("board", board);
+
+        if(board.getMemberId().equals(loginMember.getLoginId())){
+            model.addAttribute("status","true");
+        }
+
         return "views/board";
     }
 
     @GetMapping("/add")
-    public String addBoard(Model model) {
+    public String addBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
+        //세션 확인
+        if(loginMember == null){
+            return "views/boards";
+        }
+
+        //로그인 된 사용자
         model.addAttribute("board", new Board());
         return "views/addBoard";
     }
@@ -63,10 +93,17 @@ public class BoardController {
 
 
     @PostMapping("/add")
-    public String addBoard(@Validated @ModelAttribute("board") BoardSaveForm boardForm, BindingResult bindingResult,
+    public String addBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                           @Validated @ModelAttribute("board") BoardSaveForm boardForm, BindingResult bindingResult,
                            RedirectAttributes redirectAttributes) throws IOException {
         //@ModelAttribute("board")을 지정해주어야 뷰에서 board으로 받음 + 에러 코드 오브젝트도 board으로 생김
 
+        //세션 확인
+        if(loginMember == null){
+            return "views/boards";
+        }
+
+        //로그인된 사용자
         //검증에 실패하면 다시 입력 폼으로
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
@@ -83,6 +120,7 @@ public class BoardController {
             board.setImgName(attachFile);
         }
 
+        board.setMemberId(loginMember.getLoginId());
         board.setTitle(boardForm.getTitle());
         board.setBody(boardForm.getBody());
 
@@ -96,7 +134,14 @@ public class BoardController {
 
 
     @GetMapping("/edit/{boardId}")
-    public String editBoard(@PathVariable long boardId, Model model) {
+    public String editBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                            @PathVariable long boardId, Model model) {
+        //세션 확인
+        if(loginMember == null){
+            return "views/boards";
+        }
+
+        //로그인된 사용자
         Board board = boardRepository.findById(boardId);
         log.info("boardImg={}", board.getImgName());
         model.addAttribute("board", board);
@@ -104,16 +149,22 @@ public class BoardController {
     }
 
     @PostMapping("/edit/{boardId}")
-    public String editBoard(@Validated @ModelAttribute("board") BoardUpdateForm boardForm, BindingResult bindingResult, @PathVariable long boardId,
-                            RedirectAttributes redirectAttributes) throws IOException {
+    public String editBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                            @Validated @ModelAttribute("board") BoardUpdateForm boardForm, BindingResult bindingResult,
+                            @PathVariable long boardId, RedirectAttributes redirectAttributes) throws IOException {
 
+        //세션 확인
+        if(loginMember == null){
+            return "views/boards";
+        }
+
+        //로그인된 사용자
         //검증에 실패하면 다시 입력 폼으로
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             return "views/editBoard";
         }
 
-        //성공 로직
         Board board = new Board();
         //파일 저장
         if (boardForm.getImgName() != null) {//파일이 존재하면
@@ -134,7 +185,14 @@ public class BoardController {
     }
 
     @GetMapping("/delete/{boardId}")
-    public String deleteBoard(@PathVariable long boardId, RedirectAttributes redirectAttributes) {
+    public String deleteBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                              @PathVariable long boardId, RedirectAttributes redirectAttributes) {
+        //세션 확인
+        if(loginMember == null){
+            return "views/boards";
+        }
+
+        //로그인된 사용자
         boardRepository.delete(boardId);
         redirectAttributes.addAttribute("deleteStatus", true);
         return "redirect:/boards";

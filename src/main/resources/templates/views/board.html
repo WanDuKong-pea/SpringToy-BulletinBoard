@@ -43,7 +43,7 @@
     <!--/게시 성공 문구-->
 
     <!--게시글 편집, 삭제 버튼-->
-    <div class="row">
+    <div th:if="${status}" class="row">
         <div class="col">
             <button class="btn btn-dark btn-sm float-end mb-1 mx-1" th:text="#{label.button.delete}"
                     data-bs-target="#deleteModal" data-bs-toggle="modal" type="button">delete

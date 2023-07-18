@@ -1,4 +1,4 @@
-package toy.bullletinboard.controller.member;
+package toy.bullletinboard.web.member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import toy.bullletinboard.domain.member.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Objects;
 
@@ -27,29 +29,47 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(@Valid @ModelAttribute("member") MemberLoginForm memberForm,
-                        BindingResult bindingResult) {
+                        BindingResult bindingResult, HttpServletRequest request) {
         //필수 입력 부분
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             log.info("loginForm errors={}", bindingResult);
             return "views/login";
         }
 
         //아이디 존재 유무
-        if(loginService.isLoginId(memberForm.getLoginId())){
-            bindingResult.rejectValue("loginId","loginFail");
-            log.info("loginId error {}",bindingResult);
+        if (loginService.isLoginId(memberForm.getLoginId())) {
+            bindingResult.rejectValue("loginId", "loginFail");
+            log.info("loginId error {}", bindingResult);
             return "views/login";
         }
 
         //비밀번호 부분
-        Member loginMember = loginService.login(memberForm.getLoginId(),memberForm.getPassword());
-        if(loginMember == null){
-            bindingResult.rejectValue("password","loginFail");
+        Member loginMember = loginService.login(memberForm.getLoginId(), memberForm.getPassword());
+        if (loginMember == null) {
+            bindingResult.rejectValue("password", "loginFail");
             return "views/login";
         }
 
-        log.info("Login User: member={}",loginMember);
-        //로그인 성공 처리
+        log.info("Login User: member={}", loginMember);
+        //로그인 성공
+        //세션이 있으면 있는 세션 반환, 없으면 신규 세션 생성 (기본 true 옵션)
+        HttpSession session = request.getSession();
+        //세션에 로그인 회원 정보 보관
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+        return "redirect:/boards";
+    }
+
+    //HttpSession을 이용한 로그아웃 처리
+    @GetMapping("/logout")
+    public String logOutV3(HttpServletRequest request) {
+        //세션을 만들어 반환하지 않도록 false 옵션 사용
+        HttpSession session = request.getSession(false);
+
+        //세션 삭제
+        if (session != null) {
+            session.invalidate();
+        }
+
         return "redirect:/boards";
     }
 

@@ -1,8 +1,7 @@
-package toy.bullletinboard.controller;
+package toy.bullletinboard.web;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import toy.bullletinboard.domain.board.Board;
 import toy.bullletinboard.domain.board.BoardRepository;
 import toy.bullletinboard.domain.member.Member;
 import toy.bullletinboard.domain.member.MemberRepository;
