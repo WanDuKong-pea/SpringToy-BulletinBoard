@@ -33,6 +33,7 @@ public class BoardController {
 
     @GetMapping
     public String boards(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
+
         List<Board> boards = boardRepository.findAll();
         model.addAttribute("boards", boards);
 

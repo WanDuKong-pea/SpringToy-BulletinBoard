@@ -2,6 +2,8 @@ package toy.bullletinboard.web.member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,6 +14,9 @@ import toy.bullletinboard.domain.member.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.util.Objects;
 
 @Slf4j
@@ -29,7 +34,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(@Valid @ModelAttribute("member") MemberLoginForm memberForm,
-                        BindingResult bindingResult, HttpServletRequest request) {
+                        BindingResult bindingResult, HttpServletRequest request) throws NoSuchAlgorithmException {
         //필수 입력 부분
         if (bindingResult.hasErrors()) {
             log.info("loginForm errors={}", bindingResult);
@@ -44,7 +49,8 @@ public class MemberController {
         }
 
         //비밀번호 부분
-        Member loginMember = loginService.login(memberForm.getLoginId(), memberForm.getPassword());
+        Member loginMember = loginService.login(memberForm.getLoginId(), encryptionPass(memberForm.getPassword()));
+
         if (loginMember == null) {
             log.info("loginPass error {}", bindingResult);
             bindingResult.rejectValue("password", "loginFail");
@@ -106,7 +112,7 @@ public class MemberController {
 
     @PostMapping("/sign-in")
     public String save(@Valid @ModelAttribute("member") MemberSaveForm memberForm,
-                       BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+                       BindingResult bindingResult, RedirectAttributes redirectAttributes) throws NoSuchAlgorithmException {
 
         //아이디 중복 필드 에러 (자바스크립트로 했지만 한번 더 검증)
         if (memberRepository.findByLoginId(memberForm.getLoginId()).isPresent()) {
@@ -130,15 +136,23 @@ public class MemberController {
 
         Member member = new Member();
         member.setLoginId(memberForm.getLoginId());
-        member.setPassword(memberForm.getPassword());
+        member.setPassword(encryptionPass(memberForm.getPassword()));
         member.setEmail(memberForm.getEmail());
         member.setNickName(memberForm.getNickName());
         log.info("[가입 회원 데이터] member={}",member);
 
-        Member savedMember = memberRepository.save(member);
+        memberRepository.save(member);
 
         redirectAttributes.addAttribute("status", "true");
 
         return "redirect:/member/login";
+    }
+
+    public String encryptionPass(String password) throws NoSuchAlgorithmException{
+        Security.addProvider(new BouncyCastleProvider());
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(password.getBytes());
+        Base64 base= new Base64();
+        return new String(base.encode(md.digest()));
     }
 }
