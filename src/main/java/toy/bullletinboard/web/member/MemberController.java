@@ -46,12 +46,14 @@ public class MemberController {
         //비밀번호 부분
         Member loginMember = loginService.login(memberForm.getLoginId(), memberForm.getPassword());
         if (loginMember == null) {
+            log.info("loginPass error {}", bindingResult);
             bindingResult.rejectValue("password", "loginFail");
             return "views/login";
         }
 
-        log.info("Login User: member={}", loginMember);
         //로그인 성공
+        log.info("[로그인 유저] member={}", loginMember);
+
         //세션이 있으면 있는 세션 반환, 없으면 신규 세션 생성 (기본 true 옵션)
         HttpSession session = request.getSession();
         //세션에 로그인 회원 정보 보관
@@ -59,7 +61,9 @@ public class MemberController {
         return "redirect:/boards";
     }
 
-    //HttpSession을 이용한 로그아웃 처리
+    /**
+     * HttpSession을 이용한 로그아웃 처리
+     */
     @GetMapping("/logout")
     public String logOutV3(HttpServletRequest request) {
         //세션을 만들어 반환하지 않도록 false 옵션 사용
@@ -70,6 +74,7 @@ public class MemberController {
             session.invalidate();
         }
 
+        log.info("[로그아웃]");
         return "redirect:/boards";
     }
 
@@ -119,19 +124,18 @@ public class MemberController {
         }
 
         if (bindingResult.hasErrors()) {
-            log.info("errors={}", bindingResult);
+            log.info("sign-in errors={}", bindingResult);
             return "/views/sign-in";
         }
-
-        log.info("Controller memberForm={}", memberForm);
 
         Member member = new Member();
         member.setLoginId(memberForm.getLoginId());
         member.setPassword(memberForm.getPassword());
         member.setEmail(memberForm.getEmail());
         member.setNickName(memberForm.getNickName());
+        log.info("[가입 회원 데이터] member={}",member);
 
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
 
         redirectAttributes.addAttribute("status", "true");
 

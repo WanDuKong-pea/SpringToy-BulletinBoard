@@ -13,8 +13,8 @@ public class MemberRepository {
 
     public Member save(Member member) {
         member.setId(++sequence);
-        log.info("Sign in User: member={}", member);
         store.put(member.getId(), member);
+        log.info("[가입한 회원] member={}",member);
         return member;
     }
 
