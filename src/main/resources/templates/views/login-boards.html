@@ -58,6 +58,41 @@
             color: black;
         }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            <!--검색 기능-->
+            $("#searchButton").click(function() {
+                var search = $("#searchData").val(); // 검색어 가져오기
+
+                // AJAX 요청 보내기
+                $.ajax({
+                    type: "GET",
+                    url: "/boards/search", // 검색을 처리하는 컨트롤러의 URL
+                    data: { search : search }, // 검색어를 서버로 전달
+                    success: function(response) {
+                        var tableBody = $("#boardTableBody");
+                        tableBody.empty(); // 기존의 테이블 내용 삭제
+
+                        //응답 데이터 반복 출력
+                        response.forEach(function(board) {
+                            var row = $("<tr>");
+
+                            var numberCell = $("<td>").append($("<a>").attr("href", "/boards/" + board.boardId).text(board.boardId));
+                            var titleCell = $("<td>").append($("<a>").attr("href", "/boards/" + board.boardId).text(board.title));
+                            var writerCell = $("<td>").text(board.memberId);
+                            var dateCell = $("<td>").text(board.regDate);
+                            var viewsCell = $("<td>").text(board.views);
+
+                            row.append(numberCell, titleCell, writerCell, dateCell, viewsCell);
+                            tableBody.append(row);
+                        });
+                    },
+                });
+            });
+            <!--/검색 기능-->
+        });
+    </script>
 </head>
 <body>
 <div class="container" style="max-width: 400px">
@@ -88,11 +123,10 @@
             <button class="btn btn-warning float-end mt-4 mb-2 m-1" th:text="#{label.button.write}"
                     th:onclick="|location.href='@{/boards/add}'|" type="button"></button>
             <div class="input-group float-end mt-4 mb-2 mx-3 w-50">
-                <input type="text" class="form-control input-style" th:placeholder="#{label.input.search}"
-                       placeholder="Search" aria-label="Recipient's username" aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2"
-                        th:text="#{label.button.search}"
-                        data-bs-target="#loginModal" data-bs-toggle="modal">Search
+                <input type="text" class="form-control input-style" id="search" th:placeholder="#{label.input.search}"
+                       placeholder="Search" aria-label="Recipient's username" aria-describedby="searchButton">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton" th:text="#{label.button.search}">
+                    Search
                 </button>
             </div>
         </div>
@@ -112,7 +146,7 @@
                 <th th:text="#{label.post.views}">views</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="boardTableBody">
             <!--상세페이지-->
             <tr th:each="board : ${boards}">
                 <td><a href="board.html" th:href="@{|/boards/${board.boardId}|}" th:text="${board.boardId}">번호</a></td>

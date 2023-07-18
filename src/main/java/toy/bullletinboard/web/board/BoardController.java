@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,6 +44,20 @@ public class BoardController {
         model.addAttribute("member",loginMember);
 
         return "views/login-boards";
+    }
+
+    /**
+     * 게시물 검색 기능 구현
+     * 파라미터로 받아온 String search에 대응하는 게시물 리스트로 반환
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<Board>> searchBoards(@RequestParam("search") String search) {
+        // 검색어를 이용하여 게시물을 조회하고 List<Board> 형태로 결과를 반환
+        //ResponseEntity는 제네릭을 사용하여 응답 본문의 데이터 타입을 지정할 수 있음
+        List<Board> searchResult = boardRepository.searchByTitle(search);
+
+        return ResponseEntity.ok(searchResult);
+        //00 OK 상태 코드와 함께 응답을 생성
     }
 
     @GetMapping("/{boardId}")

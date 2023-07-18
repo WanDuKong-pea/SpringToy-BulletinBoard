@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -48,6 +49,12 @@ public class BoardRepository {
     public void plusViews(Long BoardId){
         Board findBoard = findById(BoardId);
         findBoard.setViews(findBoard.getViews()+1);
+    }
+
+    public List<Board> searchByTitle(String search) {
+        return findAll().stream()
+                .filter(b -> b.getTitle().contains(search))
+                .collect(Collectors.toList());
     }
 
     public void delete(Long BoardId) {
