@@ -24,7 +24,6 @@ import java.util.Objects;
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
-    private final MemberRepository memberRepository;
     private final LoginService loginService;
 
     @GetMapping("/login")
@@ -34,7 +33,7 @@ public class MemberController {
 
     @PostMapping("/login")
     public String login(@Valid @ModelAttribute("member") MemberLoginForm memberForm,
-                        BindingResult bindingResult, HttpServletRequest request) throws NoSuchAlgorithmException {
+                        BindingResult bindingResult, HttpServletRequest request){
         //필수 입력 부분
         if (bindingResult.hasErrors()) {
             log.info("loginForm errors={}", bindingResult);
@@ -49,7 +48,7 @@ public class MemberController {
         }
 
         //비밀번호 부분
-        Member loginMember = loginService.login(memberForm.getLoginId(), encryptionPass(memberForm.getPassword()));
+        Member loginMember = loginService.login(memberForm.getLoginId(), memberForm.getPassword());
 
         if (loginMember == null) {
             log.info("loginPass error {}", bindingResult);
@@ -98,7 +97,7 @@ public class MemberController {
     @PostMapping("/duplicate-id")
     public boolean checkDuplicateId(@RequestParam("loginId") String loginId) {
         //.isPresent: Optional<Member> 객체가 값을 가지고 있는지 아닌지 확인 (값존재:true, 값없음:false)
-        return !memberRepository.findByLoginId(loginId).isPresent();
+        return !loginService.searchByLoginId(loginId).isPresent();
     }
 
     /**
@@ -107,20 +106,20 @@ public class MemberController {
     @ResponseBody
     @PostMapping("/duplicate-nickname")
     public boolean checkDuplicateNickName(@RequestParam("nickName") String nickname) {
-        return !memberRepository.findByNickName(nickname).isPresent();
+        return !loginService.searchByNickName(nickname).isPresent();
     }
 
     @PostMapping("/sign-in")
     public String save(@Valid @ModelAttribute("member") MemberSaveForm memberForm,
-                       BindingResult bindingResult, RedirectAttributes redirectAttributes) throws NoSuchAlgorithmException {
+                       BindingResult bindingResult, RedirectAttributes redirectAttributes){
 
         //아이디 중복 필드 에러 (자바스크립트로 했지만 한번 더 검증)
-        if (memberRepository.findByLoginId(memberForm.getLoginId()).isPresent()) {
+        if (loginService.searchByLoginId(memberForm.getLoginId()).isPresent()) {
             bindingResult.rejectValue("loginId", "duplicationId");
         }
 
         //닉네임 중복 필드 에러 (자바스크립트로 했지만 한번 더 검증)
-        if (memberRepository.findByNickName(memberForm.getNickName()).isPresent()) {
+        if (loginService.searchByLoginId(memberForm.getNickName()).isPresent()) {
             bindingResult.rejectValue("nickName", "duplicationNickName");
         }
 
@@ -136,23 +135,15 @@ public class MemberController {
 
         Member member = new Member();
         member.setLoginId(memberForm.getLoginId());
-        member.setPassword(encryptionPass(memberForm.getPassword()));
+        member.setPassword(memberForm.getPassword());
         member.setEmail(memberForm.getEmail());
         member.setNickName(memberForm.getNickName());
         log.info("[가입 회원 데이터] member={}",member);
 
-        memberRepository.save(member);
+        loginService.saveMember(member);
 
         redirectAttributes.addAttribute("status", "true");
 
         return "redirect:/member/login";
-    }
-
-    public String encryptionPass(String password) throws NoSuchAlgorithmException{
-        Security.addProvider(new BouncyCastleProvider());
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(password.getBytes());
-        Base64 base= new Base64();
-        return new String(base.encode(md.digest()));
     }
 }

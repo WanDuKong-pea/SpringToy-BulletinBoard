@@ -63,13 +63,13 @@
         $(document).ready(function() {
             <!--검색 기능-->
             $("#searchButton").click(function() {
-                var search = $("#searchData").val(); // 검색어 가져오기
+                var searchData = $("#searchData").val(); // 검색어 가져오기
 
                 // AJAX 요청 보내기
                 $.ajax({
                     type: "GET",
                     url: "/boards/search", // 검색을 처리하는 컨트롤러의 URL
-                    data: { search : search }, // 검색어를 서버로 전달
+                    data: { search : searchData }, // 검색어를 서버로 전달
                     success: function(response) {
                         var tableBody = $("#boardTableBody");
                         tableBody.empty(); // 기존의 테이블 내용 삭제
@@ -123,7 +123,7 @@
             <button class="btn btn-warning float-end mt-4 mb-2 m-1" th:text="#{label.button.write}"
                     th:onclick="|location.href='@{/boards/add}'|" type="button"></button>
             <div class="input-group float-end mt-4 mb-2 mx-3 w-50">
-                <input type="text" class="form-control input-style" id="search" th:placeholder="#{label.input.search}"
+                <input type="text" class="form-control input-style" id="searchData" th:placeholder="#{label.input.search}"
                        placeholder="Search" aria-label="Recipient's username" aria-describedby="searchButton">
                 <button class="btn btn-outline-secondary" type="button" id="searchButton" th:text="#{label.button.search}">
                     Search

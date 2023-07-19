@@ -1,7 +1,14 @@
 package toy.bullletinboard.domain.member;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Service;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +28,33 @@ public class LoginService {
      */
     public Member login(String loginId, String password){
         return memberRepository.findByLoginId(loginId)
-                .filter(m -> m.getPassword().equals(password))
+                .filter(m -> m.getPassword().equals(encryptionPass(password)))
                 .orElse(null);
+    }
+
+    public Optional<Member> searchByLoginId(String id){
+        return memberRepository.findByLoginId(id);
+    }
+
+    public Optional<Member> searchByNickName(String nickname){
+        return memberRepository.findByNickName(nickname);
+    }
+
+    public Member saveMember(Member member){
+        member.setPassword(encryptionPass(member.getPassword()));
+        return memberRepository.save(member);
+    }
+
+    public String encryptionPass(String password) {
+        Security.addProvider(new BouncyCastleProvider());
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-512");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("비밀번호 암호화 에러 발생:"+e);
+        }
+        md.update(password.getBytes());
+        Base64 base= new Base64();
+        return new String(base.encode(md.digest()));
     }
 }

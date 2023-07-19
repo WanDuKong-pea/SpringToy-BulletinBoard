@@ -16,13 +16,14 @@ public class WebConfig implements WebMvcConfigurer { //implements WebMvcConfigur
         registry.addInterceptor(new LogInterceptor())
                 .order(1) //인터셉터 호출 순서. 낮을 수록 먼저 호출
                 .addPathPatterns("/**")
-                .excludePathPatterns("/css/**","/*.ico","/boards/error"); //인터셉터에서 제외할 패턴 지정
+                .excludePathPatterns("/css/**","/*.ico","/error",
+                        "/error-page/**");
 
         //로그인 인증 체크 인테셉터 등록
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(2)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**","/*.ico","/error",
-                        "/boards","/member/**","/boards/error");
+                        "/boards","/member/**");
     }
 }

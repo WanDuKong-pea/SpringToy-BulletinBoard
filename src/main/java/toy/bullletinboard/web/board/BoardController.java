@@ -26,15 +26,14 @@ import java.util.Objects;
 @RequestMapping("/boards")
 @RequiredArgsConstructor
 public class BoardController {
-
-    private final BoardRepository boardRepository;
+    private final BoardService boardService;
     private final FileStore fileStore;
 
 
     @GetMapping
     public String boards(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
 
-        List<Board> boards = boardRepository.findAll();
+        List<Board> boards = boardService.findAllBoards();
         model.addAttribute("boards", boards);
 
         //세션 확인
@@ -55,7 +54,8 @@ public class BoardController {
     public ResponseEntity<List<Board>> searchBoards(@RequestParam("search") String search) {
         // 검색어를 이용하여 게시물을 조회하고 List<Board> 형태로 결과를 반환
         //ResponseEntity는 제네릭을 사용하여 응답 본문의 데이터 타입을 지정할 수 있음
-        List<Board> searchResult = boardRepository.searchByTitle(search);
+        log.info("[게시글 검색어] search={}",search);
+        List<Board> searchResult = boardService.searchBoards(search);
 
         return ResponseEntity.ok(searchResult);
         //00 OK 상태 코드와 함께 응답을 생성
@@ -65,8 +65,8 @@ public class BoardController {
     public String item(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
                        @PathVariable long boardId, Model model) {
 
-        Board board = boardRepository.findById(boardId);
-        boardRepository.plusViews(boardId);
+        Board board = boardService.searchBoardById(boardId);
+        boardService.plusBoardViews(boardId);
         log.info("[조회된 게시물] board={}",board);
         model.addAttribute("board", board);
 
@@ -126,7 +126,7 @@ public class BoardController {
 
         log.info("[새게시물 입력 데이터]={}", board);
         //게시판 DB저장
-        Board savedBoard = boardRepository.save(board);
+        Board savedBoard = boardService.saveBoard(board);
         redirectAttributes.addAttribute("boardId", savedBoard.getBoardId());
         redirectAttributes.addAttribute("status", true);
         return "redirect:/boards/{boardId}";
@@ -135,7 +135,7 @@ public class BoardController {
 
     @GetMapping("/edit/{boardId}")
     public String editBoard(@PathVariable long boardId, Model model) {
-        Board board = boardRepository.findById(boardId);
+        Board board = boardService.searchBoardById(boardId);
         log.info("boardImg={}", board.getImgName());
         model.addAttribute("board", board);
         return "views/editBoard";
@@ -163,7 +163,7 @@ public class BoardController {
 
         log.info("[게시물 업데이트 데이터]={}", board);
         //게시판 DB업데이트
-        Board updateBoard = boardRepository.update(boardId, board);
+        Board updateBoard = boardService.updateBoard(boardId, board);
         redirectAttributes.addAttribute("boardId", updateBoard.getBoardId());
         redirectAttributes.addAttribute("status", true);
         return "redirect:/boards/{boardId}";
@@ -173,7 +173,7 @@ public class BoardController {
     public String deleteBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
                               @PathVariable long boardId, RedirectAttributes redirectAttributes) {
 
-        boardRepository.delete(boardId);
+        boardService.deleteBoard(boardId);
         redirectAttributes.addAttribute("deleteStatus", true);
         return "redirect:/boards";
     }
