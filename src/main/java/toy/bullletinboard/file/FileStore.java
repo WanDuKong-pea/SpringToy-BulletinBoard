@@ -3,7 +3,6 @@ package toy.bullletinboard.file;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import toy.bullletinboard.domain.board.UploadFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,9 +27,9 @@ public class FileStore {
 
     /**
      * 하나의 파일을 받아와서 저장하는 메서드
-     * UploadFile 정보를 반환
+     * UploadFile 변환된 이미지명을 반환
      */
-    public UploadFile storeFile(MultipartFile multipartFile) throws IOException {
+    public String storeFile(MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
@@ -41,7 +40,7 @@ public class FileStore {
         //서버에 저장할 파일명으로 파일 서버 저장
         multipartFile.transferTo(new File(getFullPath(storeFileName)));
 
-        return new UploadFile(originalFilename, storeFileName);
+        return storeFileName;
     }
 
     /**

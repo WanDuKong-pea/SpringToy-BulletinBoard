@@ -17,7 +17,8 @@ public class BoardRepository {
         board.setRegDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
 
         if (board.getImgName() == null) {
-            board.setImgName(new UploadFile("default", "default"));
+            //board.setImgName(new UploadFile("default", "default"));
+            board.setImgName("default");
         }
 
         store.put(board.getBoardId(), board);

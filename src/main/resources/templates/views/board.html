@@ -57,8 +57,8 @@
     <!--/게시글 편집, 삭제 버튼-->
 
     <!--게시글 이미지-->
-    <img th:if="${board.getImgName().getStoreFileName()} != 'default' "
-         th:src="|/boards/images/${board.getImgName().getStoreFileName()}|" class="img-fluid my-2"/>
+    <img th:if="${board.getImgName()} != 'default' "
+         th:src="|/boards/images/${board.getImgName()}|" class="img-fluid my-2"/>
     <!--/게시글 이미지-->
 
     <!--게시글 상세내용-->

@@ -9,7 +9,8 @@ public class Board {
     private String memberId;
     private String title;
     private String body;
-    private UploadFile imgName; //= new UploadFile("default","default"); //DB에 넣을 초기값
+    //private UploadFile imgName;
+    private String imgName;
     private String regDate;
     private int views;
 

@@ -61,8 +61,8 @@
     <!--/글쓰기 로고-->
 
     <!--게시글 기존 이미지-->
-    <img id="preview" th:src="|/boards/images/${board.getImgName().getStoreFileName()}|"
-         onerror="this.style.display='none';" class="img-fluid my-2"/>
+    <img id="preview" th:if="${board.getImgName()} != 'default' "
+         th:src="|/boards/images/${board.getImgName()}|" class="img-fluid my-2"/>
     <!--/게시글 기존 이미지-->
 
     <!--편집 폼-->

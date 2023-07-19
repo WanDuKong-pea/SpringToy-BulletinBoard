@@ -116,8 +116,8 @@ public class BoardController {
 
         //성공 로직
         if (boardForm.getImgName() != null) {
-            UploadFile attachFile = fileStore.storeFile(boardForm.getImgName());
-            board.setImgName(attachFile);
+            String imgName = fileStore.storeFile(boardForm.getImgName());
+            board.setImgName(imgName);
         }
 
         board.setMemberId(loginMember.getLoginId());
@@ -154,8 +154,8 @@ public class BoardController {
         Board board = new Board();
         //파일 저장
         if (boardForm.getImgName() != null) {//파일이 존재하면
-            UploadFile attachFile = fileStore.storeFile(boardForm.getImgName());
-            board.setImgName(attachFile);
+            String imgName = fileStore.storeFile(boardForm.getImgName());
+            board.setImgName(imgName);
         }
 
         board.setTitle(boardForm.getTitle());
