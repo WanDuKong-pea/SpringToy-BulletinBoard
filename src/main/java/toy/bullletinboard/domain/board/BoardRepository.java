@@ -1,17 +1,21 @@
 package toy.bullletinboard.domain.board;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import toy.bullletinboard.mapper.BoardMapper;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class BoardRepository {
     private static final Map<Long, Board> store = new HashMap<>(); //static
     private static long sequence = 0L; //static
-
+    private final BoardMapper boardMapper;
     public Board save(Board board) {
         board.setBoardId(++sequence);
         board.setRegDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));

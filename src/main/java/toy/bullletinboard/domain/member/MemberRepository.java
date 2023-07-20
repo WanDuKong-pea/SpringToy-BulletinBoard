@@ -1,15 +1,21 @@
 package toy.bullletinboard.domain.member;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import toy.bullletinboard.mapper.BoardMapper;
+import toy.bullletinboard.mapper.MemberMapper;
 
 import java.util.*;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class MemberRepository {
     private final Map<Long, Member> store = new HashMap<>();
     private long sequence = 0L;
+    private final MemberMapper memberMapper;
 
     public Member save(Member member) {
         member.setId(++sequence);
