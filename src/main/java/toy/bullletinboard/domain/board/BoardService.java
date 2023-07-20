@@ -20,7 +20,7 @@ public class BoardService {
     }
 
     public Board searchBoardById(Long id){
-        return boardRepository.findById(id);
+            return boardRepository.findById(id);
     }
 
     public void plusBoardViews(Long id){

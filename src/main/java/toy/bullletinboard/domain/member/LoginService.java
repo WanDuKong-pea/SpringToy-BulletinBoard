@@ -19,24 +19,25 @@ public class LoginService {
      * 로그인 id 존재 유무
      */
     public boolean isLoginId(String loginId){
-       return !memberRepository.findByLoginId(loginId).isPresent();
-
+       return memberRepository.findByLoginId(loginId) == null;
     }
 
     /**
      * @return null이면 로그인 실패
      */
     public Member login(String loginId, String password){
-        return memberRepository.findByLoginId(loginId)
-                .filter(m -> m.getPassword().equals(encryptionPass(password)))
-                .orElse(null);
+        if(memberRepository.findByLoginId(loginId).getPassword().equals(encryptionPass(password))){
+            return memberRepository.findByLoginId(loginId);
+        }else {
+            return null;
+        }
     }
 
-    public Optional<Member> searchByLoginId(String id){
+    public Member searchByLoginId(String id){
         return memberRepository.findByLoginId(id);
     }
 
-    public Optional<Member> searchByNickName(String nickname){
+    public Member searchByNickName(String nickname){
         return memberRepository.findByNickName(nickname);
     }
 

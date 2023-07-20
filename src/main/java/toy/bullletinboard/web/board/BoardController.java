@@ -63,7 +63,7 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public String item(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
-                       @PathVariable long boardId, Model model) {
+                       @PathVariable Long boardId, Model model) {
 
         Board board = boardService.searchBoardById(boardId);
         boardService.plusBoardViews(boardId);

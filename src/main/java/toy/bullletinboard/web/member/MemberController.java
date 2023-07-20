@@ -92,7 +92,7 @@ public class MemberController {
     @PostMapping("/duplicate-id")
     public boolean checkDuplicateId(@RequestParam("loginId") String loginId) {
         //.isPresent: Optional<Member> 객체가 값을 가지고 있는지 아닌지 확인 (값존재:true, 값없음:false)
-        return !loginService.searchByLoginId(loginId).isPresent();
+        return loginService.searchByLoginId(loginId)==null;
     }
 
     /**
@@ -101,7 +101,7 @@ public class MemberController {
     @ResponseBody
     @PostMapping("/duplicate-nickname")
     public boolean checkDuplicateNickName(@RequestParam("nickName") String nickname) {
-        return !loginService.searchByNickName(nickname).isPresent();
+        return loginService.searchByNickName(nickname)==null;
     }
 
     @PostMapping("/sign-in")
@@ -109,12 +109,12 @@ public class MemberController {
                        BindingResult bindingResult, RedirectAttributes redirectAttributes){
 
         //아이디 중복 필드 에러 (자바스크립트로 했지만 한번 더 검증)
-        if (loginService.searchByLoginId(memberForm.getLoginId()).isPresent()) {
+        if (loginService.searchByLoginId(memberForm.getLoginId())!=null) {
             bindingResult.rejectValue("loginId", "duplicationId");
         }
 
         //닉네임 중복 필드 에러 (자바스크립트로 했지만 한번 더 검증)
-        if (loginService.searchByLoginId(memberForm.getNickName()).isPresent()) {
+        if (loginService.searchByLoginId(memberForm.getNickName())!=null) {
             bindingResult.rejectValue("nickName", "duplicationNickName");
         }
 
