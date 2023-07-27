@@ -12,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import toy.bullletinboard.domain.board.*;
+import toy.bullletinboard.domain.comment.Comment;
+import toy.bullletinboard.domain.comment.CommentService;
 import toy.bullletinboard.domain.member.Member;
 import toy.bullletinboard.domain.member.SessionConst;
 import toy.bullletinboard.file.FileStore;
@@ -26,7 +28,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+    private final CommentService commentService;
     private final FileStore fileStore;
+
 
 
     @GetMapping
@@ -79,10 +83,18 @@ public class BoardController {
     public String item(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
                        @PathVariable Long boardId, Model model) {
 
+        //게시물 조회
         Board board = boardService.searchBoardById(boardId);
         boardService.plusBoardViews(boardId);
         log.info("[조회된 게시물] board={}",board);
+
+        //댓글 조회
+        List<Comment> comments = commentService.getCommentList(boardId);
+        List<Comment> replies = commentService.getReplyList(boardId);
+
         model.addAttribute("board", board);
+        model.addAttribute("comments",comments);
+        model.addAttribute("replies",replies);
 
         if(board.getMemberId().equals(loginMember.getLoginId())){
             model.addAttribute("status","true");

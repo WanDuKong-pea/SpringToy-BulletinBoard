@@ -22,7 +22,65 @@
             border-color: #FFC107;
         }
 
+        .fs-13{
+            font-size: 13px;
+        }
+
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        // 날짜를 변환 함수
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        $(document).ready(function() {
+            $("#commentButton").click(function() {
+                var comment = $("#commentData").val();
+                var boardId = $("#boardId").val();
+
+                $.ajax({
+                    type: "GET",
+                    url: "/comment/write",
+                    data: { comment: comment, boardId: boardId },
+                    success: function(response) {
+                        // 기존 내용 모두 지우기
+                        var tableBody = $("#commentTableBody");
+                        tableBody.empty();
+                        $("#commentData").val('');
+
+                        var comments = response.comments;
+                        var replies = response.replies;
+
+                        comments.forEach(function(comment) {
+                            var row = $("<tr>");
+                            var writerCell = $("<td>").html("<strong>" + comment.commenter + ":");
+                            var commentCell = $("<td>").text(comment.comment);
+                            var dateCell = $("<td>").text(formatDate(comment.regDate));
+
+                            row.append(writerCell, commentCell, dateCell);
+                            tableBody.append(row);
+
+                            replies.forEach(function(reply){
+                                if(reply.pcommentId === comment.commentId){
+                                    var row = $("<tr>")
+                                    var writerCell = $("<td>").attr("style","padding-left:30px;").html("<strong>"+reply.commenter + ":");
+                                    var commentCell = $("<td>").text(reply.comment);
+                                    var dateCell = $("<td>").text(formatDate(reply.regDate));
+                                    row.append(writerCell, commentCell, dateCell);
+                                    tableBody.append(row);
+                                }
+                            });
+                        });
+                    },
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 <div class="container" style="max-width: 400px">
@@ -62,6 +120,7 @@
     <!--/게시글 이미지-->
 
     <!--게시글 상세내용-->
+    <input id="boardId" type="hidden" th:value="*{boardId}"/>
     <input type="text" class="form-control my-1" id="title" th:field="*{title}" readonly>
     <textarea class="form-control my-1" id="body" rows="10" th:field="*{body}" readonly></textarea>
     <!--/게시글 상세내용-->
@@ -70,27 +129,29 @@
 <!--댓글 컨테이너, 목록 버튼-->
 <div class="container" style="max-width: 400px">
     <div>
-        <table class="table text-center" style="font-size:13px;">
-            <tbody>
-            <tr>
-                <td><strong>김예진:</strong></td>
-                <td></td>
-                <td>이것은 댓글 1입니다</td>
-                <td>2023-07-11</td>
+        <table id="commentTable" class="table text-center fs-13">
+            <tbody id="commentTableBody">
+            <div th:each="comment : ${comments}">
+            <tr th:if="${comment.pcommentId == null}">
+                <!-- 댓글 표시 -->
+                <td><strong th:text="${comment.commenter} + ':'">작성자</strong></td>
+                <td th:text="${comment.comment}">댓글 내용</td>
+                <td th:utext="${#dates.format(comment.regDate, 'yyyy-MM-dd')}">등록일</td>
             </tr>
-            <tr>
-                <td><strong>김예진:</strong></td>
-                <td style="color:darkgoldenrod">@김예진</td>
-                <td>이것은 댓글 2입니다</td>
-                <td>2023-07-11</td>
+            <!-- 대댓글 표시 -->
+            <tr th:each="reply : ${replies}" th:if="${reply.pcommentId == comment.commentId}">
+                <td style="padding-left: 30px;"><strong th:text="${reply.commenter} + ':'">작성자</strong></td>
+                <td th:text="${reply.comment}">대댓글 내용</td>
+                <td th:utext="${#dates.format(reply.regDate, 'yyyy-MM-dd')}">등록일</td>
             </tr>
+            </div>
             </tbody>
             <tfoot>
             <td colspan="4">
                 <div class="input-group">
-                    <input type="text" class="form-control input-style" th:placeholder="#{label.input.board.reply}"
-                           placeholder="Reply" aria-label="Recipient's username" aria-describedby="button-addon2">
-                    <button class="btn btn-warning" type="button" style="font-size:14px;" id="button-addon2"
+                    <input type="text" class="form-control input-style" id="commentData" th:placeholder="#{label.input.board.reply}"
+                           placeholder="Reply" aria-label="Recipient's username" aria-describedby="commentButton">
+                    <button class="btn btn-warning" type="button" style="font-size:14px;" id="commentButton"
                             th:text="#{label.button.ok}">OK
                     </button>
                 </div>

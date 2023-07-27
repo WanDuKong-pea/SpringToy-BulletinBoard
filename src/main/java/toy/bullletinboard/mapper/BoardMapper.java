@@ -2,7 +2,6 @@ package toy.bullletinboard.mapper;
 
 import org.apache.ibatis.annotations.*;
 import toy.bullletinboard.domain.board.Board;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,5 +37,4 @@ public interface BoardMapper {
     @Select("SELECT * FROM board ORDER BY boardId DESC " +
             "LIMIT #{offset}, #{pageSize}")
     List<Board> selectPage(Map map);
-
 }
