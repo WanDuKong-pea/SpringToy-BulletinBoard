@@ -4,12 +4,11 @@ import org.apache.ibatis.annotations.*;
 import toy.bullletinboard.domain.board.Board;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @Mapper
 public interface BoardMapper {
-    @Select("SELECT*FROM board")
-    ArrayList<Board> selectAllBoard();
 
     @Select("SELECT * FROM board WHERE boardId=#{id}")
     Board selectById(Long id);
@@ -32,5 +31,12 @@ public interface BoardMapper {
     @Update("UPDATE board SET title = #{title}, body = #{body}, imgName = #{imgName} WHERE boardId = #{boardId}")
     @Options(useGeneratedKeys = true, keyProperty = "boardId")
     void updateBoard(Board board);
+
+    @Select("SELECT count(*) FROM board")
+    int count();
+
+    @Select("SELECT * FROM board ORDER BY boardId DESC " +
+            "LIMIT #{offset}, #{pageSize}")
+    List<Board> selectPage(Map map);
 
 }

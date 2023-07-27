@@ -58,10 +58,6 @@ public class BoardRepository {
         return boardMapper.selectById(boardId);
     }
 
-    public List<Board> findAll() {
-        return boardMapper.selectAllBoard();
-    }
-
     public void plusViews(Long boardId) {
         boolean isUpdateView = boardMapper.updateViews(boardId);
         log.info("[boardId:{} 조회+1:{}]", isUpdateView, boardId);
@@ -73,5 +69,13 @@ public class BoardRepository {
     public void delete(Long boardId) {
         boolean isDeleteBoard = boardMapper.deleteBoard(boardId);
         log.info("[boardId:{} 삭제:{}]", boardId, isDeleteBoard);
+    }
+
+    public int count(){
+        return boardMapper.count();
+    }
+
+    public List<Board> selectPage(Map map){
+        return boardMapper.selectPage(map);
     }
 }

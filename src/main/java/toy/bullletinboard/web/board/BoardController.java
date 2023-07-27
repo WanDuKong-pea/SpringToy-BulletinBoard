@@ -18,8 +18,7 @@ import toy.bullletinboard.file.FileStore;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -31,10 +30,25 @@ public class BoardController {
 
 
     @GetMapping
-    public String boards(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
+    public String boards(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                         @RequestParam(defaultValue = "1") int page,
+                         @RequestParam(defaultValue = "10") int pageSize,
+                         Model model) {
 
-        List<Board> boards = boardService.findAllBoards();
-        model.addAttribute("boards", boards);
+
+        try {
+            int totalCnt = boardService.getCount();
+            PageHandler ph = new PageHandler(totalCnt,page,pageSize);
+            Map map = new HashMap();
+            map.put("offset",(page-1)*pageSize);
+            map.put("pageSize",pageSize);
+
+            List<Board> boards = boardService.getPage(map);
+            model.addAttribute("boards", boards);
+            model.addAttribute("ph", ph);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //세션 확인
         if(loginMember == null){
