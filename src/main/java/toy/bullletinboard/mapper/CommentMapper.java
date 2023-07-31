@@ -23,6 +23,9 @@ public interface CommentMapper {
             "VALUES(#{boardId}, #{pcommentId}, #{comment}, #{commenter}, now())")
     boolean insertComment(Comment comment);
 
+    @Update("UPDATE comment SET comment = #{comment} WHERE commentId = #{commentId} AND commenter = #{commenter}")
+    boolean update(Comment comment);
+
     @Select("SELECT commentId, boardId, pcommentId, comment, commenter, regDate " +
             "FROM comment WHERE boardId = #{boardId} AND pcommentId IS NULL ORDER BY regDate ASC, commentId ASC")
     List<Comment> selectAllComment(Long boardId);

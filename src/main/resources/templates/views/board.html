@@ -22,13 +22,12 @@
             border-color: #FFC107;
         }
 
-        .fs-13{
-            font-size: 13px;
-        }
-
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>
+    <script  th:inline="javascript">
+        let loginId = [[${loginId}]];
+        let boardId = [[${board.boardId}]];
+
         // 날짜를 변환 함수
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -38,44 +37,111 @@
             return `${year}-${month}-${day}`;
         }
 
+        //삭제 버튼 추가
+        function createDeleteButton(){
+                const deleteButton = $("<button>").addClass("commentDeleteButton dropdown-item").text("삭제");
+                const dropdownMenu = $("<ul>").addClass("dropdown-menu").append($("<li>").append(deleteButton));
+                const dropdown = $("<div>").addClass("dropdown").append($("<a>").attr("href", "#").attr("role", "button").attr("data-bs-toggle", "dropdown").attr("aria-expanded", "false").html('<img src="../icons/icons8-꺼짐-연결-상태-22.png"/>'), dropdownMenu);
+                const actionCell = $("<td>").addClass("commentHandling").append(dropdown);
+
+                return actionCell;
+        }
+
+        //댓글 행 생성
+        function createCommentRow(comment) {
+            const row = $("<tr>");
+            const writerCell = $("<td>").html("<strong>" + comment.commenter + ":");
+            const commentCell = $("<td>").text(comment.comment);
+            const dateCell = $("<td>").text(formatDate(comment.regDate));
+
+            // 로그인한 사용자와 댓글 작성자가 같으면 삭제 버튼 추가
+            if (comment.commenter === loginId) {
+                // 댓글 ID를 서버로 전달하기 위한 input 요소 추가
+                const commentIdInput = $("<input>").attr("type", "hidden").attr("name", "commentId").val(comment.commentId);
+                row.append(writerCell, commentCell, dateCell, createDeleteButton().append(commentIdInput));
+            } else {
+                row.append(writerCell, commentCell, dateCell); // 로그인한 사용자와 댓글 작성자가 다른 경우, 삭제 버튼 없이 행 생성
+            }
+
+            return row;
+        }
+
+        //대댓글 행 생성
+        function createReplyRow(reply) {
+            const row = $("<tr>")
+            const writerCell = $("<td>").attr("style", "padding-left:30px;").html("<strong>" + reply.commenter + ":");
+            const commentCell = $("<td>").text(reply.comment);
+            const dateCell = $("<td>").text(formatDate(reply.regDate));
+
+            // 로그인한 사용자와 댓글 작성자가 같으면 삭제 버튼 추가
+            if (reply.commenter === loginId) {
+                const commentIdInput = $("<input>").attr("type", "hidden").attr("name", "commentId").val(reply.commentId);
+                row.append(writerCell, commentCell, dateCell, createDeleteButton().append(commentIdInput));
+            } else {
+                row.append(writerCell, commentCell, dateCell); // 로그인한 사용자와 댓글 작성자가 다른 경우, 삭제 버튼 없이 행 생성
+            }
+
+            return row;
+        }
+
+        // 댓글과 대댓글을 테이블에 추가하는 함수
+        function appendCommentsAndReplies(comments, replies) {
+            const tableBody = $("#commentTableBody");
+            tableBody.empty();
+            $("#commentData").val('');
+
+            comments.forEach(function (comment) {
+                const commentRow = createCommentRow(comment);
+                tableBody.append(commentRow);
+
+                replies.forEach(function (reply) {
+                    if (reply.pcommentId === comment.commentId) {
+                        const replyRow = createReplyRow(reply);
+                        tableBody.append(replyRow);
+                    }
+                });
+            });
+        }
+
         $(document).ready(function() {
-            $("#commentButton").click(function() {
-                var comment = $("#commentData").val();
-                var boardId = $("#boardId").val();
+            $("#commentInsertButton").click(function() {
+                const comment = $("#commentData").val();
 
                 $.ajax({
-                    type: "GET",
-                    url: "/comment/write",
+                    type: "PUT",
+                    url: "/comment",
                     data: { comment: comment, boardId: boardId },
                     success: function(response) {
                         // 기존 내용 모두 지우기
-                        var tableBody = $("#commentTableBody");
+                        const tableBody = $("#commentTableBody");
                         tableBody.empty();
                         $("#commentData").val('');
 
-                        var comments = response.comments;
-                        var replies = response.replies;
+                        const comments = response.comments;
+                        const replies = response.replies;
+                        appendCommentsAndReplies(comments, replies);
+                    },
+                });
+            });
 
-                        comments.forEach(function(comment) {
-                            var row = $("<tr>");
-                            var writerCell = $("<td>").html("<strong>" + comment.commenter + ":");
-                            var commentCell = $("<td>").text(comment.comment);
-                            var dateCell = $("<td>").text(formatDate(comment.regDate));
+            $(document).on("click", ".commentDeleteButton", function() {
+                const clickedButton = $(this);
+                const commentId = clickedButton.closest('td.commentHandling').find('input').val();
+                console.log(commentId);
 
-                            row.append(writerCell, commentCell, dateCell);
-                            tableBody.append(row);
+                $.ajax({
+                    type: "DELETE",
+                    url: "/comment",
+                    data: { commentId: commentId, boardId:boardId},
+                    success: function(response) {
+                        // 기존 내용 모두 지우기
+                        const tableBody = $("#commentTableBody");
+                        tableBody.empty();
+                        $("#commentData").val('');
 
-                            replies.forEach(function(reply){
-                                if(reply.pcommentId === comment.commentId){
-                                    var row = $("<tr>")
-                                    var writerCell = $("<td>").attr("style","padding-left:30px;").html("<strong>"+reply.commenter + ":");
-                                    var commentCell = $("<td>").text(reply.comment);
-                                    var dateCell = $("<td>").text(formatDate(reply.regDate));
-                                    row.append(writerCell, commentCell, dateCell);
-                                    tableBody.append(row);
-                                }
-                            });
-                        });
+                        const comments = response.comments;
+                        const replies = response.replies;
+                        appendCommentsAndReplies(comments, replies);
                     },
                 });
             });
@@ -101,7 +167,7 @@
     <!--/게시 성공 문구-->
 
     <!--게시글 편집, 삭제 버튼-->
-    <div th:if="${status}" class="row">
+    <div th:if="${loginId eq board.memberId}" class="row">
         <div class="col">
             <button class="btn btn-dark btn-sm float-end mb-1 mx-1" th:text="#{label.button.delete}"
                     data-bs-target="#deleteModal" data-bs-toggle="modal" type="button">delete
@@ -120,7 +186,6 @@
     <!--/게시글 이미지-->
 
     <!--게시글 상세내용-->
-    <input id="boardId" type="hidden" th:value="*{boardId}"/>
     <input type="text" class="form-control my-1" id="title" th:field="*{title}" readonly>
     <textarea class="form-control my-1" id="body" rows="10" th:field="*{body}" readonly></textarea>
     <!--/게시글 상세내용-->
@@ -129,7 +194,7 @@
 <!--댓글 컨테이너, 목록 버튼-->
 <div class="container" style="max-width: 400px">
     <div>
-        <table id="commentTable" class="table text-center fs-13">
+        <table id="commentTable" class="table text-center" style="font-size: 13px">
             <tbody id="commentTableBody">
             <div th:each="comment : ${comments}">
             <tr th:if="${comment.pcommentId == null}">
@@ -137,21 +202,51 @@
                 <td><strong th:text="${comment.commenter} + ':'">작성자</strong></td>
                 <td th:text="${comment.comment}">댓글 내용</td>
                 <td th:utext="${#dates.format(comment.regDate, 'yyyy-MM-dd')}">등록일</td>
+                <td class="commentHandling">
+                    <input type="hidden" th:value="${comment.commentId}" th:name="commentId"/>
+                    <div class="dropdown" th:if="${loginId eq comment.commenter}">
+                        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../icons/icons8-꺼짐-연결-상태-22.png"/>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button type="button" class="commentDeleteButton dropdown-item" th:text="#{label.button.delete}">삭제</button>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
             </tr>
             <!-- 대댓글 표시 -->
             <tr th:each="reply : ${replies}" th:if="${reply.pcommentId == comment.commentId}">
+                <td style="display: none;">
+                    <input id="replyId" type="hidden" th:value="${reply.commentId}" th:name="commentId"/>
+                </td>
                 <td style="padding-left: 30px;"><strong th:text="${reply.commenter} + ':'">작성자</strong></td>
                 <td th:text="${reply.comment}">대댓글 내용</td>
                 <td th:utext="${#dates.format(reply.regDate, 'yyyy-MM-dd')}">등록일</td>
+                <td class="commentHandling">
+                    <input type="hidden" th:value="${reply.commentId}" th:name="commentId"/>
+                    <div class="dropdown" th:if="${loginId eq reply.commenter}">
+                        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="../icons/icons8-꺼짐-연결-상태-22.png"/>
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button type="button" class="commentDeleteButton dropdown-item" th:text="#{label.button.delete}">삭제</button>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
             </tr>
             </div>
             </tbody>
             <tfoot>
-            <td colspan="4">
+            <td colspan="5">
                 <div class="input-group">
                     <input type="text" class="form-control input-style" id="commentData" th:placeholder="#{label.input.board.reply}"
-                           placeholder="Reply" aria-label="Recipient's username" aria-describedby="commentButton">
-                    <button class="btn btn-warning" type="button" style="font-size:14px;" id="commentButton"
+                           placeholder="Reply" aria-label="Recipient's username" aria-describedby="commentInsertButton">
+                    <button class="btn btn-warning" type="button" style="font-size:14px;" id="commentInsertButton"
                             th:text="#{label.button.ok}">OK
                     </button>
                 </div>

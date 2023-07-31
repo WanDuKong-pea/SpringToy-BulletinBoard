@@ -24,6 +24,10 @@ public class CommentService {
         return commentRepository.insert(comment);
     }
 
+    public boolean edit(Comment comment){
+        return commentRepository.update(comment);
+    }
+
     public List<Comment> getCommentList(Long boardId){
         return commentRepository.selectListComment(boardId);
     }

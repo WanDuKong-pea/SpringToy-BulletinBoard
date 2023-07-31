@@ -30,6 +30,10 @@ public class CommentRepository {
         return commentMapper.delete(map);
     }
 
+    public boolean update(Comment comment){
+        return commentMapper.update(comment);
+    }
+
     public boolean insert(Comment comment){
         return commentMapper.insertComment(comment);
     }

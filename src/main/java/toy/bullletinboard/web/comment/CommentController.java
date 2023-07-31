@@ -24,7 +24,7 @@ public class CommentController {
     /**
      * 댓글 입력 및 재차로 뷰에 뿌리기
      */
-    @GetMapping("/write")
+    @PutMapping()
     public ResponseEntity<Map<String, List<Comment>>> writeComment(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
                                                                   @RequestParam("boardId") Long boardId,
                                                                   @RequestParam("comment") String comment) {
@@ -36,8 +36,46 @@ public class CommentController {
         c.setBoardId(boardId);
         c.setComment(comment);
         c.setCommenter(loginMember.getLoginId());
-
+        //댓글 저장
         commentService.write(c);
+        //댓글 리스트 반환
+        return ResponseEntity.ok(getCommentList(boardId));
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<Map<String, List<Comment>>> deleteComment(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                                                                    @RequestParam("commentId") Long commentId,
+                                                                    @RequestParam("boardId") Long boardId){
+        log.info("[삭제 댓글] commentId={} writer={}",commentId,loginMember.getLoginId());
+
+        //댓글 삭제
+        commentService.remove(commentId,loginMember.getLoginId());
+        //댓글 리스트 반환
+        return ResponseEntity.ok(getCommentList(boardId));
+    }
+
+    @PatchMapping()
+    public ResponseEntity<Map<String, List<Comment>>> editComment(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+                                                                          @RequestParam("commentId") Long commentId,
+                                                                          @RequestParam("comment")String comment,
+                                                                          @RequestParam("boardId") Long boardId){
+        log.info("[수정 댓글] commentId={} writer={}",commentId,loginMember.getLoginId());
+
+        Comment c = new Comment();
+        c.setCommentId(commentId);
+        c.setComment(comment);
+        c.setCommenter(loginMember.getLoginId());
+
+        //댓글 수정
+        commentService.edit(c);
+        //댓글 리스트 반환
+        return ResponseEntity.ok(getCommentList(boardId));
+    }
+
+    /**
+     * 댓글과 대댓글 리스트를 새로 가지고 오는 작업
+     */
+    public Map<String, List<Comment>> getCommentList(Long boardId){
         List<Comment> comments = commentService.getCommentList(boardId);
         List<Comment> replies = commentService.getReplyList(boardId);
 
@@ -45,7 +83,7 @@ public class CommentController {
         result.put("comments", comments);
         result.put("replies", replies);
 
-        return ResponseEntity.ok(result);
-        //00 OK 상태 코드와 함께 응답을 생성
+        return result;
+
     }
 }

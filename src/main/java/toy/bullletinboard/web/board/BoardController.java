@@ -95,10 +95,7 @@ public class BoardController {
         model.addAttribute("board", board);
         model.addAttribute("comments",comments);
         model.addAttribute("replies",replies);
-
-        if(board.getMemberId().equals(loginMember.getLoginId())){
-            model.addAttribute("status","true");
-        }
+        model.addAttribute("loginId",loginMember.getLoginId());
 
         return "views/board";
     }
