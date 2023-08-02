@@ -12,7 +12,7 @@ public interface BoardMapper {
     @Select("SELECT * FROM board WHERE boardId=#{id}")
     Board selectById(Long id);
 
-    @Select("SELECT * FROM board WHERE title like CONCAT('%', #{searchData}, '%')")
+    @Select("SELECT * FROM board WHERE title like CONCAT('%', #{searchData}, '%') ORDER BY boardId DESC")
     List<Board> selectBoardLikeTitle(String searchData);
 
     @Update("UPDATE board SET views = views + 1 WHERE boardId=#{id}")

@@ -27,14 +27,17 @@ public class CommentRepository {
         Map map = new HashMap();
         map.put("commentId", commentId);
         map.put("commenter", commenter);
+        log.info("[삭제 댓글] commentId={}, commenter={}",commentId,commenter);
         return commentMapper.delete(map);
     }
 
     public boolean update(Comment comment){
+        log.info("[수정 댓글] Comment={}",comment);
         return commentMapper.update(comment);
     }
 
     public boolean insert(Comment comment){
+        log.info("[입력 댓글] Comment={}",comment);
         return commentMapper.insertComment(comment);
     }
 

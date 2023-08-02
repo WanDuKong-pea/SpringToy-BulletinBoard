@@ -1,6 +1,7 @@
 package toy.bullletinboard.domain.member;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginService {
