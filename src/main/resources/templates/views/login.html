@@ -29,15 +29,9 @@
     </style>
 </head>
 <body>
-<div class="container" style="max-width: 400px">
-    <!--프로젝트 로고-->
-    <div class="text-center mt-5">
-        <a th:href="@{/boards}"><h1><strong th:text="#{project.title}"></strong></h1></a>
-        <hr class="my-1">
-        <h6><strong th:text="#{project.subtitle}">project by KimYeJin</strong></h6>
-    </div>
-    <!--/프로젝트 로고-->
-</div>
+<!--타이틀-->
+<div class="container" style="max-width: 400px" th:insert="~{views/fragment :: title}"></div>
+<!--/타이틀-->
 
 <div class="container" style="max-width: 600px">
     <!--회원가입 축하 문구-->
@@ -72,22 +66,28 @@
         <a th:href="@{/member/sign-in}" href="sign-in.html" class="px-4" th:text="#{label.button.signin}">
             sign in
         </a>
+        <!-- 추후 구현
         <a href="#findPassModal" data-bs-toggle="modal" class="px-4" th:text="#{label.button.findpass}">
             find Password
         </a>
+        -->
     </div>
     <!--/회원가입, 비밀번호 찾기 a태그-->
 </div>
 
+<!--footer-->
+<div class="container pt-5" style="max-width: 600px;" th:insert="~{views/fragment :: footer}"></div>
+<!--/footer-->
+
 <div class="container" style="max-width:350px;">
-    <!--카카오로 로그인하기-->
+    <!--카카오로 로그인하기 추후 구현
     <div class="text-center">
         <hr class="my-1">
         <span style="font-size:14px;">Login Others</span>
         <hr class="my-1">
     </div>
     <div class="text-center">카카오 자리</div>
-    <!--카카오로 로그인하기-->
+    카카오로 로그인하기-->
 </div>
 
 <!--비밀번호 찾기 모달-->

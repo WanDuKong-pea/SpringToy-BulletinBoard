@@ -179,15 +179,9 @@
     </script>
 </head>
 <body>
-<div class="container" style="max-width: 400px">
-    <!--프로젝트 로고-->
-    <div class="text-center mt-5">
-        <a th:href="@{/boards}"><h1><strong th:text="#{project.title}"></strong></h1></a>
-        <hr class="my-1">
-        <h6><strong th:text="#{project.subtitle}">project by KimYeJin</strong></h6>
-    </div>
-    <!--/프로젝트 로고-->
-</div>
+<!--타이틀-->
+<div class="container" style="max-width: 400px" th:insert="~{views/fragment :: title}"></div>
+<!--/타이틀-->
 
 <div class="container" style="max-width: 350px" th:object="${board}">
     <!--게시 성공 문구-->
@@ -305,6 +299,10 @@
     </div>
 </div>
 <!--/댓글 컨테이너, 목록 버튼-->
+
+<!--footer-->
+<div class="container pt-5" style="max-width: 600px;" th:insert="~{views/fragment :: footer}"></div>
+<!--/footer-->
 
 <!-- 게시글 삭제 확인 Modal -->
 <div class="modal" tabindex="-1" id="deleteModal">

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<!--프로젝트 로고-->
+<div class="text-center mt-5"  th:fragment="title">
+    <a th:href="@{/boards}"><h1><strong th:text="#{project.title}"></strong></h1></a>
+    <hr class="my-1">
+    <h6><strong th:text="#{project.subtitle}">project by KimYeJin</strong></h6>
+</div>
+<!--/프로젝트 로고-->
+
+<!--footer-->
+<div class="row" th:fragment="footer">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <strong>Git Hub</strong>
+                <h6 class="card-subtitle mt-1 mb-2 text-body-secondary">source code</h6>
+                <a href="https://github.com/WanDuKong-pea/SpringToy-BulletinBoard" class="card-link">link</a>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <strong>Notion</strong>
+                <h6 class="card-subtitle mt-1 mb-2 text-body-secondary">2022 blog</h6>
+                <a href="https://round-backbone-23e.notion.site/f5327e613b984747bca9b5ffa8dc8657?v=6a1677686c4541a6a257e0957e72961a" class="card-link">link</a>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <strong class="card-title">Notion</strong>
+                <h6 class="card-subtitle mt-1 mb-2 text-body-secondary"> 2023 blog</h6>
+                <a href="https://round-backbone-23e.notion.site/d805692666a543c38382783ed782b17d?v=a101de9e32764064b2e1fa7e25dc6def" class="card-link">link</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/footer-->
+</body>
+</html>

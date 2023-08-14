@@ -60,15 +60,9 @@
     </style>
 </head>
 <body>
-<div class="container" style="max-width: 400px">
-    <!--프로젝트 로고-->
-    <div class="text-center mt-5">
-        <a th:href="@{/boards}"><h1><strong th:text="#{project.title}"></strong></h1></a>
-        <hr class="my-1">
-        <h6><strong th:text="#{project.subtitle}">project by KimYeJin</strong></h6>
-    </div>
-    <!--/프로젝트 로고-->
-</div>
+<!--타이틀-->
+<div class="container" style="max-width: 400px" th:insert="~{views/fragment :: title}"></div>
+<!--/타이틀-->
 
 <div class="container" style="max-width: 400px">
     <!--삭제 성공 문구-->
@@ -147,6 +141,11 @@
     </div>
     <!--/페이지네이션-->
 </div>
+
+<!--footer-->
+<div class="container pt-3" style="max-width: 600px;" th:insert="~{views/fragment :: footer}"></div>
+<!--/footer-->
+
 <!-- /container -->
 
 <!-- 로그인 유도 모달 -->
