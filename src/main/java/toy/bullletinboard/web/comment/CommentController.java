@@ -21,7 +21,7 @@ public class CommentController {
     private final CommentService commentService;
 
     /**
-     * 댓글 입력 및 재차로 뷰에 뿌리기
+     * 댓글을 저장하고 새로운 댓글리스트를 반환
      */
     @PutMapping()
     public ResponseEntity<Map<String, List<Comment>>> writeComment(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
@@ -41,24 +41,30 @@ public class CommentController {
             c.setPcommentId(pcommentId);
         }
 
-        //댓글 저장
+        // 댓글 저장
         commentService.write(c);
-        //댓글 리스트 반환
+        // 댓글 리스트 반환
         return ResponseEntity.ok(getCommentList(boardId));
     }
 
+    /**
+     * 댓글을 삭제하고 새로운 댓글 리스트를 반환
+     */
     @DeleteMapping()
     public ResponseEntity<Map<String, List<Comment>>> deleteComment(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
                                                                     @RequestParam("commentId") Long commentId,
                                                                     @RequestParam("boardId") Long boardId){
         log.info("[DeleteMapping 댓글] commentId={} writer={}",commentId,loginMember.getLoginId());
 
-        //댓글 삭제
+        // 댓글 삭제
         commentService.remove(commentId,loginMember.getLoginId());
-        //댓글 리스트 반환
+        // 댓글 리스트 반환
         return ResponseEntity.ok(getCommentList(boardId));
     }
 
+    /**
+     * 댓글을 수정하고 새로운 댓글 리스트를 반환합니다.
+     */
     @PatchMapping()
     public ResponseEntity<Map<String, List<Comment>>> editComment(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
                                                                           @RequestParam("commentId") Long commentId,

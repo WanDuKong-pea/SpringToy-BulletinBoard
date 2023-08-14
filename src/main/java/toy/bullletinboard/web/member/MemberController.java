@@ -21,11 +21,17 @@ import java.util.Objects;
 public class MemberController {
     private final LoginService loginService;
 
+    /**
+     * 로그인 페이지로 이동
+     */
     @GetMapping("/login")
     public String loginForm(@ModelAttribute("member") MemberLoginForm memberForm) {
         return "views/login";
     }
 
+    /**
+     * 로그인 요청 처리
+     */
     @PostMapping("/login")
     public String login(@Valid @ModelAttribute("member") MemberLoginForm memberForm,
                         BindingResult bindingResult, HttpServletRequest request){
@@ -78,7 +84,9 @@ public class MemberController {
         return "redirect:/boards";
     }
 
-
+    /**
+     * 회원가입 페이지로 이동
+     */
     @GetMapping("/sign-in")
     public String siginIn(Model model) {
         model.addAttribute("member", new MemberSaveForm());
@@ -104,8 +112,11 @@ public class MemberController {
         return loginService.searchByNickName(nickname)==null;
     }
 
+    /**
+     * 회원 정보 저장 요청 처리
+     */
     @PostMapping("/sign-in")
-    public String save(@Valid @ModelAttribute("member") MemberSaveForm memberForm,
+    public String saveMember(@Valid @ModelAttribute("member") MemberSaveForm memberForm,
                        BindingResult bindingResult, RedirectAttributes redirectAttributes){
 
         //아이디 중복 필드 에러 (자바스크립트로 했지만 한번 더 검증)
@@ -125,7 +136,7 @@ public class MemberController {
 
         if (bindingResult.hasErrors()) {
             log.info("sign-in errors={}", bindingResult);
-            return "/views/sign-in";
+            return "views/sign-in";
         }
 
         Member member = new Member();
