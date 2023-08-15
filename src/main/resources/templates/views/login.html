@@ -27,6 +27,35 @@
             border-color: #FFC107;
         }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script  th:inline="javascript">
+        $(document).ready(function() {
+            $("#sendPwdEmail").click(function () {
+                let loginId = $("#findPwdId").val();
+                let email = $("#findPwdEmail").val();
+
+                $.ajax({
+                    type: "GET",
+                    url: "/member/pwd-email",
+                    data: {loginId: loginId, email: email},
+                    success: function (response) {
+                        if(!response.status){
+                            $("#alertFindPwd").text("잘못된 이메일 혹은 존재하지 않는 아이디입니다.");
+                        } else {
+                            // 기존 내용 모두 지우기
+                            const modalBody = $("#modalBody");
+                            modalBody.empty();
+                            $("#sendPwdEmail").remove();
+                            $("#closeModalBtn").text("OK");
+
+                            const comment = $("<h6>").text("메일을 성공적으로 보냈습니다.");
+                            modalBody.append(comment);
+                        }
+                    },
+                });
+            });
+        });
+    </script>
 </head>
 <body>
 <!--타이틀-->
@@ -66,11 +95,9 @@
         <a th:href="@{/member/sign-in}" href="sign-in.html" class="px-4" th:text="#{label.button.signin}">
             sign in
         </a>
-        <!-- 추후 구현
         <a href="#findPassModal" data-bs-toggle="modal" class="px-4" th:text="#{label.button.findpass}">
             find Password
         </a>
-        -->
     </div>
     <!--/회원가입, 비밀번호 찾기 a태그-->
 </div>
@@ -78,17 +105,6 @@
 <!--footer-->
 <div class="container pt-5" style="max-width: 600px;" th:insert="~{views/fragment :: footer}"></div>
 <!--/footer-->
-
-<div class="container" style="max-width:350px;">
-    <!--카카오로 로그인하기 추후 구현
-    <div class="text-center">
-        <hr class="my-1">
-        <span style="font-size:14px;">Login Others</span>
-        <hr class="my-1">
-    </div>
-    <div class="text-center">카카오 자리</div>
-    카카오로 로그인하기-->
-</div>
 
 <!--비밀번호 찾기 모달-->
 <div class="modal fade" id="findPassModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -98,47 +114,22 @@
                 <h1 class="modal-title fs-5" th:text="#{modal.title.findpass}">Forgot password</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label for="id" class="col-form-label" th:text="#{label.input.member.id}">ID</label>
-                        <input type="text" class="form-control" id="id">
-                        <div class="alert-div">존재하지 않는 아이디입니다.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="col-form-label" th:text="#{label.input.member.email}">email</label>
-                        <input type="text" class="form-control" id="email">
-                        <div class="alert-div">이메일이 다릅니다.</div>
-                    </div>
-                </form>
+            <div id="modalBody" class="modal-body">
+                <div class="mb-3">
+                    <label for="findPwdId" class="col-form-label" th:text="#{label.input.member.id}">ID</label>
+                    <input type="text" class="form-control" id="findPwdId">
+                </div>
+                <div class="mb-3">
+                    <label for="findPwdEmail" class="col-form-label" th:text="#{label.input.member.email}">email</label>
+                    <input type="text" class="form-control" id="findPwdEmail">
+                    <div id="alertFindPwd" class="alert-div"></div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal" th:text="#{label.button.cancel}">
+                <button id="closeModalBtn" type="button" class="btn btn-dark" data-bs-dismiss="modal" th:text="#{label.button.cancel}">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-warning" data-bs-target="#findPassModal2" data-bs-toggle="modal"
-                        th:text="#{label.button.sand}">Send message
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="findPassModal2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center" th:text="#{project.login.findpass}">
-                An email with a temporary password has been sent
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-dark" data-bs-target="#findPassModal" data-bs-toggle="modal"
-                        th:text="#{label.button.back}">Back
-                </button>
-                <button type="button" class="btn btn-warning" onclick="location.href='login.html'"
-                        th:text="#{label.button.login}">Login
-                </button>
+                <button type="button" class="btn btn-warning" id="sendPwdEmail" th:text="#{label.button.sand}">Send</button>
             </div>
         </div>
     </div>

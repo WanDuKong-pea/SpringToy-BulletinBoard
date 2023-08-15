@@ -2,17 +2,24 @@ package toy.bullletinboard.web.member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import toy.bullletinboard.domain.comment.Comment;
 import toy.bullletinboard.domain.member.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Objects;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -20,6 +27,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MemberController {
     private final LoginService loginService;
+    private final JavaMailSender mailSender;
 
     /**
      * 로그인 페이지로 이동
@@ -42,7 +50,7 @@ public class MemberController {
         }
 
         //아이디 존재 유무
-        if (loginService.isLoginId(memberForm.getLoginId())) {
+        if (!loginService.isLoginId(memberForm.getLoginId())) {
             bindingResult.rejectValue("loginId", "loginFail");
             log.info("loginId error {}", bindingResult);
             return "views/login";
@@ -151,5 +159,47 @@ public class MemberController {
         redirectAttributes.addAttribute("status", "true");
 
         return "redirect:/member/login";
+    }
+
+    /**
+     * 임시 비밀번호 저장후 로그인 뷰 반환하는 메서드
+     */
+    @ResponseBody
+    @GetMapping("/pwd-email")
+    public ResponseEntity<Map<String, Boolean>> sendMail(
+            @RequestParam("loginId") String loginId,
+            @RequestParam("email") String email) {
+
+        Map<String,Boolean> map = new HashMap<>();
+        map.put("status",true);
+
+        //아이디 존재 유무, 이메일 확인
+        if (!loginService.isLoginId(loginId) || !loginService.searchByLoginId(loginId).getEmail().equals(email)){
+           map.put("status",false);
+            return ResponseEntity.ok(map);
+        }
+
+        String temporaryPassword = UUID.randomUUID().toString();
+        loginService.editPwd(loginId,temporaryPassword);
+
+        sendTemporaryPasswordEmail(email,temporaryPassword);
+
+        return ResponseEntity.ok(map);
+    }
+
+    /**
+     * 임시비밀번호 메일로 전송하는 메서드
+     */
+    private void sendTemporaryPasswordEmail(String recipientEmail, String temporaryPassword) {
+        String subject = "임시 비밀번호";
+        String message = "임시 비밀번호: " + temporaryPassword;
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(recipientEmail);
+        mailMessage.setSubject(subject);
+        mailMessage.setText(message);
+        mailMessage.setFrom("sophisticateo_o@naver.com");
+
+        mailSender.send(mailMessage);
     }
 }

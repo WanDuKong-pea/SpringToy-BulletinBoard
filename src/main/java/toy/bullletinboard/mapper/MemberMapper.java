@@ -1,16 +1,10 @@
 package toy.bullletinboard.mapper;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import toy.bullletinboard.domain.board.Board;
 import toy.bullletinboard.domain.member.Member;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @Mapper
 public interface MemberMapper {
@@ -31,4 +25,7 @@ public interface MemberMapper {
 
     @Select("SELECT * FROM member")
     List<Member> selectAll();
+
+    @Update("UPDATE member set password = #{password} WHERE loginId=#{loginId}")
+    void updatePwd(Map map);
 }

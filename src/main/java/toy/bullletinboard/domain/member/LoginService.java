@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -21,7 +22,7 @@ public class LoginService {
      * 로그인 id 존재 유무
      */
     public boolean isLoginId(String loginId){
-       return memberRepository.findByLoginId(loginId) == null;
+       return memberRepository.findByLoginId(loginId) != null;
     }
 
     /**
@@ -59,5 +60,12 @@ public class LoginService {
         md.update(password.getBytes());
         Base64 base= new Base64();
         return new String(base.encode(md.digest()));
+    }
+
+    public void editPwd(String loginId, String password){
+        Map<String,String> map = new HashMap<>();
+        map.put("loginId",loginId);
+        map.put("password",encryptionPass(password));
+        memberRepository.updatePwd(map);
     }
 }

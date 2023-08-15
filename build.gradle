@@ -41,6 +41,9 @@ dependencies {
 	// Jackson 라이브러리 추가
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+	// JavaMail 라이브러리 추가
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

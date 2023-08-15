@@ -15,6 +15,9 @@ import java.util.*;
 public class MemberRepository {
     private final MemberMapper memberMapper;
 
+    /**
+     * 신규 멤버 저장
+     */
     public Member save(Member member) {
         //새로운 멤버 정보 저장
         memberMapper.insertMember(member);
@@ -36,12 +39,24 @@ public class MemberRepository {
         return memberMapper.selectByLoginId(loginId);
     }
 
+    /**
+     * db에 저장되는 닉네임으로 멤버 찾기
+     */
     public Member findByNickName(String nickName) {
         return memberMapper.selectByNickName(nickName);
     }
 
+    /**
+     * 전체 회원 조회
+     */
     public List<Member> findAll() {
         return memberMapper.selectAll();
     }
 
+    /**
+     * 비밀번호 업데이트
+     */
+    public void updatePwd(Map map){
+        memberMapper.updatePwd(map);
+    }
 }
