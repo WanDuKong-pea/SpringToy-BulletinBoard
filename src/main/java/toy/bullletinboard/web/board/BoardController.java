@@ -86,7 +86,7 @@ public class BoardController {
      * 게시물 상세 페이지를 반환하는 메서드
      */
     @GetMapping("/{boardId}")
-    public String item(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+    public String item(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = true) Member loginMember,
                        @PathVariable Long boardId, Model model) {
 
         // 게시물 및 댓글 정보를 조회하여 뷰에 전달하고 게시물 조회 수를 증가
@@ -132,7 +132,7 @@ public class BoardController {
      * 게시물을 추가하는 메서드
      */
     @PostMapping("/add")
-    public String addBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+    public String addBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = true) Member loginMember,
                            @Validated @ModelAttribute("board") BoardSaveForm boardForm, BindingResult bindingResult,
                            RedirectAttributes redirectAttributes) throws IOException {
         // @ModelAttribute("board")을 지정해주어야 뷰에서 board으로 받음 + 에러 코드 오브젝트도 board으로 생김
@@ -218,7 +218,7 @@ public class BoardController {
      * 게시물을 삭제하고 게시물 목록으로 리다이렉트하는 메서드
      */
     @GetMapping("/delete/{boardId}")
-    public String deleteBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
+    public String deleteBoard(@SessionAttribute(name= SessionConst.LOGIN_MEMBER, required = true) Member loginMember,
                               @PathVariable long boardId, RedirectAttributes redirectAttributes) {
 
         boardService.deleteBoard(boardId);
