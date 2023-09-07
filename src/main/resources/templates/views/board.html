@@ -28,7 +28,7 @@
 
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script  th:inline="javascript">
+    <script th:inline="javascript">
         let loginId = [[${loginId}]];
         let boardId = [[${board.boardId}]];
 
@@ -42,13 +42,13 @@
         }
 
         //삭제 버튼 추가
-        function createDeleteButton(){
-                const deleteButton = $("<button>").addClass("commentDeleteButton dropdown-item").text("삭제");
-                const dropdownMenu = $("<ul>").addClass("dropdown-menu").append($("<li>").append(deleteButton));
-                const dropdown = $("<div>").addClass("dropdown").append($("<a>").attr("href", "#").attr("role", "button").attr("data-bs-toggle", "dropdown").attr("aria-expanded", "false").html('<img src="../icons/icons8-꺼짐-연결-상태-22.png"/>'), dropdownMenu);
-                const actionCell = $("<td>").addClass("commentHandling").append(dropdown);
+        function createDeleteButton() {
+            const deleteButton = $("<button>").addClass("commentDeleteButton dropdown-item").text("삭제");
+            const dropdownMenu = $("<ul>").addClass("dropdown-menu").append($("<li>").append(deleteButton));
+            const dropdown = $("<div>").addClass("dropdown").append($("<a>").attr("href", "#").attr("role", "button").attr("data-bs-toggle", "dropdown").attr("aria-expanded", "false").html('<img src="../icons/icons8-꺼짐-연결-상태-22.png"/>'), dropdownMenu);
+            const actionCell = $("<td>").addClass("commentHandling").append(dropdown);
 
-                return actionCell;
+            return actionCell;
         }
 
         //댓글 행 생성
@@ -108,74 +108,73 @@
             });
         }
 
-        $(document).ready(function() {
-            $("#commentInsertButton").click(function() {
-                let comment = $("#commentData").val();
-                let pcommentId = null;
-                if(comment.startsWith('@') && comment.includes(":") && $("#pcommentIdDiv").children().length > 0){
-                    const startIndex = comment.indexOf(':') + 1;
-                    const result = comment.substring(startIndex);
-                    const inputPcommentId = $(this).closest('div#commentInsertDiv').find('div#pcommentIdDiv').find('input#pcommentId');
-                    comment = result;
-                    pcommentId =  inputPcommentId.val();
+        $(document).on('click', '#commentInsertButton', function () {
+            let comment = $("#commentData").val();
+            let pcommentId = null;
+            if (comment.startsWith('@') && comment.includes(":") && $("#pcommentIdDiv").children().length > 0) {
+                const startIndex = comment.indexOf(':') + 1;
+                const result = comment.substring(startIndex);
+                const inputPcommentId = $(this).closest('div#commentInsertDiv').find('div#pcommentIdDiv').find('input#pcommentId');
+                comment = result;
+                pcommentId = inputPcommentId.val();
 
-                    //이 부분 대댓글 상위 댓글의 작성자와 ID가 일치하는지 봐야함
-                    //const colonIndex = comment.indexOf(':', atIndex);
-                    //const commenter = inputString.substring(colonIndex);
-
-                    $("#pcommentIdDiv").empty();
-                }
-
-                $.ajax({
-                    type: "PUT",
-                    url: "/comment",
-                    data: { comment: comment, boardId: boardId, pcommentId:pcommentId },
-                    success: function(response) {
-                        // 기존 내용 모두 지우기
-                        const tableBody = $("#commentTableBody");
-                        tableBody.empty();
-                        $("#commentData").val('');
-
-                        const comments = response.comments;
-                        const replies = response.replies;
-                        appendCommentsAndReplies(comments, replies);
-                    },
-                });
-            });
-
-            $(document).on("click", ".commentDeleteButton", function() {
-                const clickedButton = $(this);
-                const commentId = clickedButton.closest('td.commentHandling').find('input').val();
-                console.log(commentId);
-
-                $.ajax({
-                    type: "DELETE",
-                    url: "/comment",
-                    data: { commentId: commentId, boardId:boardId},
-                    success: function(response) {
-                        // 기존 내용 모두 지우기
-                        const tableBody = $("#commentTableBody");
-                        tableBody.empty();
-                        $("#commentData").val('');
-
-                        const comments = response.comments;
-                        const replies = response.replies;
-                        appendCommentsAndReplies(comments, replies);
-                    },
-                });
-            });
-
-            $(document).on("click", ".replyLink", function() {
-                $("#commentData").val('@' + $(this).find('strong').text());
-                $("#commentData").focus();
+                //이 부분 대댓글 상위 댓글의 작성자와 ID가 일치하는지 봐야함
+                //const colonIndex = comment.indexOf(':', atIndex);
+                //const commenter = inputString.substring(colonIndex);
 
                 $("#pcommentIdDiv").empty();
+            }
 
-                const pcommentId = $(this).closest('tr').find('td.commentHandling').find('input').val();
-                const commentIdInput = $("<input>").attr("type", "hidden").attr("id", "pcommentId").attr("name", "pcommentId").val(pcommentId);
-                $("#pcommentIdDiv").append(commentIdInput);
+            $.ajax({
+                type: "PUT",
+                url: "/comment",
+                data: {comment: comment, boardId: boardId, pcommentId: pcommentId},
+                success: function (response) {
+                    // 기존 내용 모두 지우기
+                    const tableBody = $("#commentTableBody");
+                    tableBody.empty();
+                    $("#commentData").val('');
+
+                    const comments = response.comments;
+                    const replies = response.replies;
+                    appendCommentsAndReplies(comments, replies);
+                },
             });
         });
+
+        $(document).on("click", ".commentDeleteButton", function () {
+            const clickedButton = $(this);
+            const commentId = clickedButton.closest('td.commentHandling').find('input').val();
+            console.log(commentId);
+
+            $.ajax({
+                type: "DELETE",
+                url: "/comment",
+                data: {commentId: commentId, boardId: boardId},
+                success: function (response) {
+                    // 기존 내용 모두 지우기
+                    const tableBody = $("#commentTableBody");
+                    tableBody.empty();
+                    $("#commentData").val('');
+
+                    const comments = response.comments;
+                    const replies = response.replies;
+                    appendCommentsAndReplies(comments, replies);
+                },
+            });
+        });
+
+        $(document).on("click", ".replyLink", function () {
+            $("#commentData").val('@' + $(this).find('strong').text());
+            $("#commentData").focus();
+
+            $("#pcommentIdDiv").empty();
+
+            const pcommentId = $(this).closest('tr').find('td.commentHandling').find('input').val();
+            const commentIdInput = $("<input>").attr("type", "hidden").attr("id", "pcommentId").attr("name", "pcommentId").val(pcommentId);
+            $("#pcommentIdDiv").append(commentIdInput);
+        });
+
     </script>
 </head>
 <body>
@@ -221,63 +220,68 @@
         <table id="commentTable" class="table text-center" style="font-size: 13px">
             <tbody id="commentTableBody">
             <div th:each="comment : ${comments}">
-            <tr th:if="${comment.pcommentId == null}">
-                <!-- 댓글 표시 -->
-                <td>
-                    <a href="#" class="replyLink">
-                        <strong th:text="${comment.commenter} + ':'">작성자</strong>
-                    </a>
-                </td>
-                <td th:text="${comment.comment}">댓글 내용</td>
-                <td th:utext="${#dates.format(comment.regDate, 'yyyy-MM-dd')}">등록일</td>
-                <td class="commentHandling">
-                    <input type="hidden" th:value="${comment.commentId}" th:name="commentId"/>
-                    <div class="dropdown" th:if="${loginId eq comment.commenter}">
-                        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="../icons/icons8-꺼짐-연결-상태-22.png"/>
+                <tr th:if="${comment.pcommentId == null}">
+                    <!-- 댓글 표시 -->
+                    <td>
+                        <a href="#" class="replyLink">
+                            <strong th:text="${comment.commenter} + ':'">작성자</strong>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <button type="button" class="commentDeleteButton dropdown-item" th:text="#{label.button.delete}">삭제</button>
-                            </li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-            <!-- 대댓글 표시 -->
-            <tr th:each="reply : ${replies}" th:if="${reply.pcommentId == comment.commentId}">
-                <td style="display: none;">
-                    <input id="replyId" type="hidden" th:value="${reply.commentId}" th:name="commentId"/>
-                </td>
-                <td style="padding-left: 30px;">
-                    <strong th:text="${reply.commenter} + ':'">
-                       작성자
-                    </strong>
-                </td>
-                <td th:text="${reply.comment}">대댓글 내용</td>
-                <td th:utext="${#dates.format(reply.regDate, 'yyyy-MM-dd')}">등록일</td>
-                <td class="commentHandling">
-                    <input type="hidden" th:value="${reply.commentId}" th:name="commentId"/>
-                    <div class="dropdown" th:if="${loginId eq reply.commenter}">
-                        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="../icons/icons8-꺼짐-연결-상태-22.png"/>
-                        </a>
+                    </td>
+                    <td th:text="${comment.comment}">댓글 내용</td>
+                    <td th:utext="${#dates.format(comment.regDate, 'yyyy-MM-dd')}">등록일</td>
+                    <td class="commentHandling">
+                        <input type="hidden" th:value="${comment.commentId}" th:name="commentId"/>
+                        <div class="dropdown" th:if="${loginId eq comment.commenter}">
+                            <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="../icons/icons8-꺼짐-연결-상태-22.png"/>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <button type="button" class="commentDeleteButton dropdown-item"
+                                            th:text="#{label.button.delete}">삭제
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                <!-- 대댓글 표시 -->
+                <tr th:each="reply : ${replies}" th:if="${reply.pcommentId == comment.commentId}">
+                    <td style="display: none;">
+                        <input id="replyId" type="hidden" th:value="${reply.commentId}" th:name="commentId"/>
+                    </td>
+                    <td style="padding-left: 30px;">
+                        <strong th:text="${reply.commenter} + ':'">
+                            작성자
+                        </strong>
+                    </td>
+                    <td th:text="${reply.comment}">대댓글 내용</td>
+                    <td th:utext="${#dates.format(reply.regDate, 'yyyy-MM-dd')}">등록일</td>
+                    <td class="commentHandling">
+                        <input type="hidden" th:value="${reply.commentId}" th:name="commentId"/>
+                        <div class="dropdown" th:if="${loginId eq reply.commenter}">
+                            <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="../icons/icons8-꺼짐-연결-상태-22.png"/>
+                            </a>
 
-                        <ul class="dropdown-menu">
-                            <li>
-                                <button type="button" class="commentDeleteButton dropdown-item" th:text="#{label.button.delete}">삭제</button>
-                            </li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <button type="button" class="commentDeleteButton dropdown-item"
+                                            th:text="#{label.button.delete}">삭제
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
             </div>
             </tbody>
             <tfoot>
             <td colspan="5">
                 <div id="commentInsertDiv" class="input-group">
                     <div id="pcommentIdDiv"></div>
-                    <input type="text" class="form-control input-style" id="commentData" th:placeholder="#{label.input.board.reply}"
+                    <input type="text" class="form-control input-style" id="commentData"
+                           th:placeholder="#{label.input.board.reply}"
                            placeholder="Reply" aria-label="Recipient's username" aria-describedby="commentInsertButton">
                     <button class="btn btn-warning" type="button" style="font-size:14px;" id="commentInsertButton"
                             th:text="#{label.button.ok}">OK
